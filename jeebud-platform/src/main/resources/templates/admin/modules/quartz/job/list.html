@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>任务列表</title>
+    <div th:replace="admin/include/resources :: head"></div>
+</head>
+<body>
+
+<!-- 加载动画 -->
+<div th:replace="admin/include/common :: loading"></div>
+
+<!-- 正文开始 -->
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-card-body table-tool-mini">
+            <div class="layui-form toolbar">
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label w-auto">任&nbsp;&nbsp;务&nbsp;&nbsp;名：</label>
+                        <div class="layui-input-inline mr0">
+                            <input name="jobName" class="layui-input" type="text" placeholder="输入任务名"/>
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label w-auto">状&emsp;&emsp;态：</label>
+                        <div class="layui-input-inline mr0">
+                            <select name="status">
+                                <option value="">请选择</option>
+                                <option value="0">暂停</option>
+                                <option value="1">正常</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="layui-inline" style="padding-right: 110px;">
+                        <button class="layui-btn icon-btn" lay-filter="formSubSearch" lay-submit>
+                            <i class="layui-icon">&#xe615;</i>搜索
+                        </button>
+                        <button shiro:hasPermission="i:quartz:job:add" id="btnAdd" class="layui-btn icon-btn"><i class="layui-icon">&#xe654;</i>添加</button>
+                    </div>
+                </div>
+            </div>
+
+            <table class="layui-table" id="tableList" lay-filter="tableList"></table>
+        </div>
+    </div>
+</div>
+<!-- 表格操作列 -->
+<script type="text/html" id="tableActionBar">
+    <a shiro:hasPermission="i:quartz:job:update" class="layui-btn layui-btn-primary layui-btn-xs" lay-event="edit">修改</a>
+    <a shiro:hasPermission="i:quartz:job:delete" class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+    <a shiro:hasPermission="i:quartz:job:run" class="layui-btn layui-btn-xs" lay-event="run">执行一次</a>
+</script>
+<!-- 表格状态列 -->
+<script type="text/html" id="tableStatus">
+    <input shiro:hasPermission="i:quartz:job:updateStatus" type="checkbox" lay-filter="ckStatus" value="{{d.id}}" lay-skin="switch"
+           lay-text="正常|暂停" {{d.status==1?'checked':''}} />
+    <input shiro:lacksPermission="i:quartz:job:updateStatus" type="checkbox" lay-filter="ckStatus" value="{{d.id}}" lay-skin="switch"
+           lay-text="正常|暂停" {{d.status==1?'checked':''}} disabled/>
+</script>
+<!-- 表单弹窗 -->
+<script type="text/html" id="model">
+    <form id="modelForm" lay-filter="modelForm" class="layui-form model-form layui-row">
+        <input name="id" type="hidden"/>
+        <div class="layui-col-md6">
+            <div class="layui-form-item">
+                <label class="layui-form-label">任务名</label>
+                <div class="layui-input-block">
+                    <input name="jobName" placeholder="请输入任务名" type="text" class="layui-input"
+                           lay-verType="tips" lay-verify="required" required/>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">任务组</label>
+                <div class="layui-input-block">
+                    <input name="jobGroup" placeholder="请输入任务组" type="text" class="layui-input"
+                           lay-verType="tips" lay-verify="required" required/>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">方法名</label>
+                <div class="layui-input-block">
+                    <input name="methodName" placeholder="请输入方法名" type="text" class="layui-input"
+                           lay-verType="tips" lay-verify="required" required/>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">参数</label>
+                <div class="layui-input-block">
+                    <input name="methodParams" placeholder="请输入参数" type="text" class="layui-input"/>
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-md6">
+            <div class="layui-form-item">
+                <label class="layui-form-label">cron式&nbsp;<i lay-tips="cron表达式" lay-direction="1" class="layui-icon layui-icon-tips"></i></label>
+                <div class="layui-input-block">
+                    <input name="cronExpression" placeholder="请输入cron表达式" type="text" class="layui-input"
+                           lay-verType="tips" lay-verify="required" required/>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">失败策略</label>
+                <div class="layui-input-block">
+                    <input type="radio" name="misfirePolicy" value="1" title="立即执行" />
+                    <input type="radio" name="misfirePolicy" value="2" title="执行一次" />
+                    <input type="radio" name="misfirePolicy" value="3" title="放弃执行" checked/>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">并发执行</label>
+                <div class="layui-input-block">
+                    <input type="radio" name="concurrent" value="0" title="禁止" checked/>
+                    <input type="radio" name="concurrent" value="1" title="允许"/>
+                </div>
+            </div>
+        </div>
+        <div class="layui-form-item text-right">
+            <button class="layui-btn layui-btn-primary" type="button" ew-event="closePageDialog">取消</button>
+            <button class="layui-btn" lay-filter="modelSubmit" lay-submit>保存</button>
+        </div>
+    </form>
+</script>
+<!-- js部分 -->
+<div th:replace="admin/include/resources :: script"></div>
+<script>
+    layui.use(['layer', 'form', 'table', 'admin'], function () {
+        var $ = layui.jquery;
+        var layer = layui.layer;
+        var form = layui.form;
+        var table = layui.table;
+        var admin = layui.admin;
+
+
+        // 渲染表格
+        var insTb = table.render({
+            elem: '#tableList',
+            url: SERVER_CTX + '/quartz/job/list',
+            page: true,
+            toolbar: true,
+            cellMinWidth: 100,
+            defaultToolbar: ['filter'],
+            cols: [
+                    [{type: 'numbers', title: '序号'},
+                    {field: 'jobName', title: '任务名'},
+                    {field: 'jobGroup', title: '任务组'},
+                    {field: 'methodName', title: '方法名'},
+                    {field: 'methodParams', title: '参数'},
+                    {field: 'cronExpression', title: 'cron表达式'},
+                    {
+                        field: 'misfirePolicy', align: 'center', templet: function (d) {
+                            var status = {
+                                '1':'立即执行',
+                                '2':'执行一次',
+                                '3':'放弃执行',
+                            };
+                            return status[d.misfirePolicy];
+                        }, title: '失败策略'
+                    },
+                    {
+                        field: 'concurrent', align: 'center', templet: function (d) {
+                            var status = {
+                                '0':'禁止',
+                                '1':'允许'
+                            };
+                            return status[d.concurrent];
+                        }, title: '并发执行'
+                    },
+                    {field: 'status', templet: '#tableStatus', title: '状态'},
+                    {align: 'center', toolbar: '#tableActionBar', title: '操作', minWidth: 200}
+                ]
+            ],
+            parseData: function(res){ //res 即为原始返回的数据
+                return {
+                    "code": res.code, //解析接口状态
+                    "msg": res.message, //解析提示文本
+                    "count": res.data?res.data.totalElements:null, //解析数据长度
+                    "data": res.data?res.data.content:null //解析数据列表
+                };
+            }
+        });
+
+        // 添加
+        $('#btnAdd').click(function () {
+            showEditModel();
+        });
+
+        // 搜索
+        form.on('submit(formSubSearch)', function (data) {
+            insTb.reload({where: data.field}, 'data');
+        });
+
+        // 工具条点击事件
+        table.on('tool(tableList)', function (obj) {
+            var data = obj.data;
+            var layEvent = obj.event;
+            if (layEvent === 'edit') { // 修改
+                showEditModel(data);
+            } else if (layEvent === 'del') { // 删除
+                doDel(obj);
+            } else if (layEvent === 'run') { // 重置密码
+                run(data);
+            }
+        });
+
+        // 显示表单弹窗
+        function showEditModel(data) {
+            admin.open({
+                type: 1,
+                area: '670px',
+                title: (data ? '修改' : '添加'),
+                content: $('#model').html(),
+                success: function (layero, dIndex) {
+                    $(layero).children('.layui-layer-content').css('overflow', 'visible');
+                    var url = data ? '/quartz/job/update' : '/quartz/job/add';
+                    // 回显数据
+                    form.val('modelForm', data);
+                    // 表单提交事件
+                    form.on('submit(modelSubmit)', function (data) {
+                        layer.load(2);
+                        admin.req(SERVER_CTX + url, data.field, function (res) {
+                            layer.close(dIndex);
+                            layer.msg(res.message, {icon: 1});
+                            insTb.reload();
+                        }, 'post');
+                        return false;
+                    });
+                }
+            });
+        }
+
+        // 删除
+        function doDel(obj) {
+            layer.confirm('确定要删除“' + obj.data.jobName + '”吗？', {
+                shade: .1,
+                skin: 'layui-layer-admin'
+            }, function (i) {
+                layer.close(i);
+                layer.load(2);
+                admin.req(SERVER_CTX + '/quartz/job/delete', {
+                    id: obj.data.id
+                }, function (res) {
+                    layer.msg(res.message, {icon: 1});
+                    obj.del();
+                }, 'post');
+            });
+        }
+
+        // 修改状态
+        form.on('switch(ckStatus)', function (obj) {
+            layer.load(2);
+            $.post(SERVER_CTX + '/quartz/job/updateStatus', {
+                id: obj.elem.value,
+                status: obj.elem.checked ? 1 : 0
+            }, function (res) {
+                layer.closeAll('loading');
+                if (res.code == 0) {
+                    layer.msg(res.message, {icon: 1});
+                } else {
+                    layer.msg(res.message, {icon: 2});
+                    $(obj.elem).prop('checked', !obj.elem.checked);
+                    form.render('checkbox');
+                }
+            }, 'json');
+        });
+
+        // 立即执行一次
+        function run(data) {
+            layer.confirm('确定要执行一次'+data.jobName+'任务吗？', {
+                shade: .1,
+                skin: 'layui-layer-admin'
+            }, function (i) {
+                layer.close(i);
+                layer.load(2);
+                admin.req(SERVER_CTX + '/quartz/job/run', {
+                    id: data.id
+                }, function (res) {
+                    layer.msg(res.message, {icon: 1});
+                }, 'post');
+            });
+        }
+
+    });
+</script>
+</body>
+</html>

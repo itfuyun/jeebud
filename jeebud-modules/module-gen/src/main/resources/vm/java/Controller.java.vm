@@ -1,0 +1,107 @@
+package ${package}.module.${moduleName}.controller;
+
+import ${package}.core.log.OpTypeEnum;
+import ${package}.core.log.Operation;
+import ${package}.core.web.RestEntity;
+import ${package}.module.${moduleName}.model.entity.${className};
+import ${package}.module.${moduleName}.model.param.${className}PageQuery;
+import ${package}.module.${moduleName}.service.${className}Service;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.stereotype.Controller;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import java.util.List;
+
+/**
+ * <p>Description: </p>
+ * <p>Copyright (c) www.jeebud.com Inc. All Rights Reserved.</p>
+ *
+ * @author ${author}
+ */
+@Controller
+@RequestMapping("/${moduleName}/${classname}")
+public class ${className}Controller {
+    /**
+     * 模板前缀
+     */
+    private static final String TPL_PATH = "admin/modules/${moduleName}/${classname}";
+    @Autowired
+	${className}Service ${classname}Service;
+
+    /**
+     * 列表页面
+     *
+     * @return
+     */
+    @RequiresPermissions("p:${moduleName}:${classname}:list")
+    @GetMapping("/pageList")
+    public String pageList() {
+        return TPL_PATH + "/list";
+    }
+
+    /**
+     * 获取列表
+     *
+     * @param query
+     * @return
+     */
+    @RequiresPermissions("i:${moduleName}:${classname}:list")
+    @GetMapping("/list")
+    @ResponseBody
+    public RestEntity<Page<${className}>> ${classname}List(${className}PageQuery query) {
+        Page<${className}> ${classname}Page = ${classname}Service.page(query);
+        return RestEntity.ok().data(${classname}Page);
+    }
+
+    /**
+     * 新增
+     *
+     * @param ${classname}
+     * @return
+     */
+    @Operation(module = "${tableComment}模块", opType = OpTypeEnum.CREATE, info = "新增${tableComment}")
+    @RequiresPermissions("i:${moduleName}:${classname}:add")
+    @PostMapping("/add")
+    @ResponseBody
+    public RestEntity<String> add(@Validated ${className} ${classname}) {
+		${classname}Service.insert(${classname});
+        return RestEntity.ok();
+    }
+
+    /**
+     * 修改
+     *
+     * @param ${classname}
+     * @return
+     */
+    @Operation(module = "${tableComment}模块", opType = OpTypeEnum.UPDATE, info = "修改${tableComment}")
+    @RequiresPermissions("i:${moduleName}:${classname}:update")
+    @PostMapping("/update")
+    @ResponseBody
+    public RestEntity<String> update(@Validated ${className} ${classname}) {
+		${classname}Service.update(${classname});
+        return RestEntity.ok();
+    }
+
+    /**
+     * 删除
+     *
+     * @param id
+     * @return
+     */
+    @Operation(module = "${tableComment}模块", opType = OpTypeEnum.DELETE, info = "删除${tableComment}")
+    @RequiresPermissions("i:${moduleName}:${classname}:delete")
+    @PostMapping("/delete")
+    @ResponseBody
+    public RestEntity<String> delete(Long id) {
+		${classname}Service.delete(id);
+        return RestEntity.ok();
+    }
+
+}

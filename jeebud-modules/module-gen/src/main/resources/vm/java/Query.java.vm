@@ -1,0 +1,36 @@
+package ${package}.module.${moduleName}.model.param;
+
+import ${package}.core.data.annotation.QueryField;
+import ${package}.core.data.annotation.QueryType;
+import ${package}.core.data.jpa.domain.PageQuery;
+import lombok.Data;
+
+#foreach ($column in $columns)
+#if($column.attrType == 'Date')
+import java.util.Date;
+#break
+#end
+#end
+
+/**
+ * <p>Description: </p>
+ * <p>Copyright (c) www.jeebud.com Inc. All Rights Reserved.</p>
+ *
+ * @author ${author}
+ */
+@Data
+public class ${className}PageQuery extends PageQuery {
+#foreach ($column in $columns)
+#if($column.columnName != $primaryKey.columnName)
+    /**
+     * $column.columnComment
+     */
+#if($column.attrType == 'String')
+    @QueryField(name = "$column.attrname", type = QueryType.LIKE)
+#else
+    @QueryField(name = "$column.attrname", type = QueryType.EQUAL)
+#end
+    private $column.attrType $column.attrname;
+#end
+#end
+}

@@ -1,0 +1,15 @@
+package ${package}.module.${moduleName}.repository;
+
+import ${package}.core.data.jpa.BaseRepository;
+import ${package}.module.${moduleName}.model.entity.${className};
+import org.springframework.stereotype.Repository;
+
+/**
+ * <p>Description: </p>
+ * <p>Copyright (c) www.jeebud.com Inc. All Rights Reserved.</p>
+ *
+ * @author ${author}
+ */
+@Repository
+public interface ${className}Repository extends BaseRepository<${className}, Long> {
+}

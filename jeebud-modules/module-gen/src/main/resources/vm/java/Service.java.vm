@@ -1,0 +1,43 @@
+package ${package}.module.${moduleName}.service;
+
+import ${package}.core.data.jpa.domain.PageQuery;
+import ${package}.module.${moduleName}.model.entity.${className};
+import org.springframework.data.domain.Page;
+
+/**
+ * <p>Description: </p>
+ * <p>Copyright (c) www.jeebud.com Inc. All Rights Reserved.</p>
+ *
+ * @author ${author}
+ */
+public interface ${className}Service {
+
+    /**
+     * 获取列表
+     *
+     * @param query
+     * @return
+     */
+    Page<${className}> page(PageQuery query);
+
+    /**
+    * 插入
+    *
+    * @param ${classname}
+    */
+    Long insert(${className} ${classname});
+
+    /**
+     * 修改
+     *
+     * @param ${classname}
+     */
+    void update(${className} ${classname});
+
+    /**
+     * 删除
+     *
+     * @param id
+     */
+    void delete(Long id);
+}

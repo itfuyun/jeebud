@@ -1,0 +1,35 @@
+package ${package}.module.${moduleName}.model.entity;
+
+import ${package}.core.data.jpa.domain.AbstractDO;
+import lombok.Data;
+
+import javax.persistence.*;
+#foreach ($column in $columns)
+#if($column.attrType == 'Date')
+import java.util.Date;
+#break
+#end
+#end
+
+/**
+ * <p>Description: </p>
+ * <p>Copyright (c) www.jeebud.com Inc. All Rights Reserved.</p>
+ *
+ * @author ${author}
+ */
+@Data
+@Entity
+@Table(name = "${tableName}")
+public class ${className} extends AbstractDO {
+	
+#foreach ($column in $columns)
+#if($column.columnName != $primaryKey.columnName)
+	/**
+	* $column.columnComment
+	*/
+	@Column(name = "$column.columnName")
+	private $column.attrType $column.attrname;
+
+#end
+#end
+}

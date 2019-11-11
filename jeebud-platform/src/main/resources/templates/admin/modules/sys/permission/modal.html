@@ -1,0 +1,59 @@
+<form id="modelForm" lay-filter="modelForm" class="layui-form model-form layui-row">
+    <input name="id" type="hidden"/>
+    <div class="layui-col-md6">
+        <div class="layui-form-item">
+            <label class="layui-form-label">图标</label>
+            <div class="layui-input-block">
+                <input name="icon" id="iconFonts" lay-filter="iconFonts" placeholder="例:layui-icon-home" type="text" class="layui-input"/>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <input name="pid" type="hidden" id="pid" th:value="${parent.id}">
+            <label class="layui-form-label">上级权限</label>
+            <div class="layui-input-block">
+                <label id="selectInput"><input autocomplete="off" placeholder="请选择上级" type="text" class="layui-input" id="parentName" disabled  th:value="${parent.name}"
+                                               lay-verType="tips" lay-verify="required" required/></label>
+                <ul id="permissionTree" class="ztree" style="margin-top:0; width:160px;display: none"></ul>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">权限名</label>
+            <div class="layui-input-block">
+                <input name="name" placeholder="请输入权限名" type="text" class="layui-input"
+                       lay-verType="tips" lay-verify="required" required/>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">权限编码</label>
+            <div class="layui-input-block">
+                <input name="code" placeholder="请输入权限编码" type="text" class="layui-input"/>
+            </div>
+        </div>
+    </div>
+    <div class="layui-col-md6">
+        <div class="layui-form-item">
+            <label class="layui-form-label">路径</label>
+            <div class="layui-input-block">
+                <input name="url" placeholder="请输入路径" type="text" class="layui-input"/>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">排序&nbsp;<i lay-tips="数值越大越靠前" lay-direction="1" class="layui-icon layui-icon-tips"></i></label>
+            <div class="layui-input-block">
+                <input name="sortNum" placeholder="请输入排序" type="text" class="layui-input" value="10"
+                       lay-verType="tips" lay-verify="required|number" required/>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">类型</label>
+            <div class="layui-input-block">
+                <input type="radio" name="type" value="0" title="菜单" checked/>
+                <input type="radio" name="type" value="1" title="按钮"/>
+            </div>
+        </div>
+    </div>
+    <div class="layui-form-item text-right">
+        <button class="layui-btn layui-btn-primary" type="button" ew-event="closePageDialog">取消</button>
+        <button class="layui-btn" lay-filter="modelSubmit" lay-submit>保存</button>
+    </div>
+</form>

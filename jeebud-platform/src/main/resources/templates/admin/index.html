@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>系统首页</title>
+    <div th:replace="admin/include/resources :: head"></div>
+</head>
+<body class="layui-layout-body">
+<div class="layui-layout layui-layout-admin">
+    <!-- 头部 -->
+    <div th:replace="admin/include/layout :: header"></div>
+
+    <!-- 侧边栏 -->
+    <div th:replace="admin/include/layout :: side"></div>
+
+    <!-- 主体部分 -->
+    <div class="layui-body"></div>
+    <!-- 底部 -->
+    <div th:replace="admin/include/layout :: footer"></div>
+</div>
+
+<!-- 加载动画 -->
+<div th:replace="admin/include/common :: loading"></div>
+<!-- 侧边栏渲染模板 -->
+<script id="sideNav" type="text/html">
+    {{#  layui.each(d, function(index, item){ }}
+    <li class="layui-nav-item">
+        <a lay-href="{{item.url}}"><i class="layui-icon {{item.icon}}"></i>&emsp;<cite>{{item.name}}</cite></a>
+        {{# if(item.subMenus&&item.subMenus.length>0){ }}
+        <dl class="layui-nav-child">
+            {{# layui.each(item.subMenus, function(index, subItem){ }}
+            <dd>
+                <a lay-href="{{ subItem.url }}">{{ subItem.name }}</a>
+                {{# if(subItem.subMenus&&subItem.subMenus.length>0){ }}
+                <dl class="layui-nav-child">
+                    {{# layui.each(subItem.subMenus, function(index, thrItem){ }}
+                    <dd><a lay-href="{{ thrItem.url }}">{{ thrItem.name }}</a></dd>
+                    {{# }); }}
+                </dl>
+                {{# } }}
+            </dd>
+            {{# }); }}
+        </dl>
+        {{# } }}
+    </li>
+    {{#  }); }}
+</script>
+<!-- js部分 -->
+<div th:replace="admin/include/resources :: script"></div>
+<script>
+    layui.use(['element', 'admin', 'index', 'laytpl',], function () {
+        var $ = layui.jquery;
+        var admin = layui.admin;
+        var index = layui.index;
+        var laytpl = layui.laytpl;
+        var element = layui.element;
+
+        // 默认加载主页
+        index.loadHome({
+            menuPath: SERVER_CTX + '/welcome',
+            menuName: '<i class="layui-icon layui-icon-home"></i>'
+        });
+
+        // ajax渲染侧边栏
+        admin.req(SERVER_CTX + '/sys/user/getUserMenu',{}, function (res) {
+            laytpl(sideNav.innerHTML).render(res.data, function (html) {
+                $('*[lay-filter=admin-side-nav]').html(html);
+                element.render('nav');
+                admin.activeNav(SERVER_CTX + '/welcome');
+            });
+        }, 'get');
+
+    });
+</script>
+</body>
+</html>

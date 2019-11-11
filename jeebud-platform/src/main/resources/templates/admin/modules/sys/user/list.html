@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>用户列表</title>
+    <div th:replace="admin/include/resources :: head"></div>
+</head>
+<body>
+
+<!-- 加载动画 -->
+<div th:replace="admin/include/common :: loading"></div>
+
+<!-- 正文开始 -->
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-card-body table-tool-mini">
+            <div class="layui-form toolbar">
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label w-auto">用&nbsp;&nbsp;户&nbsp;&nbsp;名：</label>
+                        <div class="layui-input-inline mr0">
+                            <input name="username" class="layui-input" type="text" placeholder="输入用户名"/>
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label w-auto">姓&emsp;&emsp;名：</label>
+                        <div class="layui-input-inline mr0">
+                            <input name="name" class="layui-input" type="text" placeholder="输入姓名"/>
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label w-auto">手&emsp;&emsp;机：</label>
+                        <div class="layui-input-inline mr0">
+                            <input name="mobile" class="layui-input" type="text" placeholder="输入手机"/>
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label w-auto">状&emsp;&emsp;态：</label>
+                        <div class="layui-input-inline mr0">
+                            <select name="status">
+                                <option value="">请选择</option>
+                                <option value="0">正常</option>
+                                <option value="1">锁定</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="layui-inline" style="padding-right: 110px;">
+                        <button class="layui-btn icon-btn" lay-filter="formSubSearch" lay-submit>
+                            <i class="layui-icon">&#xe615;</i>搜索
+                        </button>
+                        <button shiro:hasPermission="i:sys:user:add" id="btnAdd" class="layui-btn icon-btn"><i class="layui-icon">&#xe654;</i>添加</button>
+                    </div>
+                </div>
+            </div>
+
+            <table class="layui-table" id="tableList" lay-filter="tableList"></table>
+        </div>
+    </div>
+</div>
+<!-- 表格操作列 -->
+<script type="text/html" id="tableActionBar">
+    <a shiro:hasPermission="i:sys:user:update" class="layui-btn layui-btn-primary layui-btn-xs" {{d.adminFlag==1?'disabled':'lay-event="edit"'}}>修改</a>
+    <a shiro:hasPermission="i:sys:user:delete" class="layui-btn layui-btn-danger layui-btn-xs" {{d.adminFlag==1?'disabled':'lay-event="del"'}}>删除</a>
+    <a shiro:hasPermission="i:sys:user:resetPwd" class="layui-btn layui-btn-xs" {{d.adminFlag==1?'disabled':'lay-event="reset"'}}>重置密码</a>
+</script>
+<!-- 表格状态列 -->
+<script type="text/html" id="tableStatus">
+    <input shiro:hasPermission="i:sys:user:lock" type="checkbox" lay-filter="ckStatus" value="{{d.id}}" lay-skin="switch"
+           lay-text="正常|锁定" {{d.status==0?'checked':''}} {{d.adminFlag==1?'disabled':''}}/>
+    <input shiro:lacksPermission="i:sys:user:lock" type="checkbox" lay-filter="ckStatus" value="{{d.id}}" lay-skin="switch"
+           lay-text="正常|锁定" {{d.status==0?'checked':''}} disabled/>
+</script>
+<!-- 表单弹窗 -->
+<script type="text/html" id="model">
+    <form id="modelForm" lay-filter="modelForm" class="layui-form model-form">
+        <input name="id" type="hidden"/>
+        <div class="layui-form-item">
+            <label class="layui-form-label">用户名</label>
+            <div class="layui-input-block">
+                <input name="username" placeholder="请输入用户名" type="text" class="layui-input" maxlength="20"
+                       lay-verType="tips" lay-verify="required" required/>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">姓名</label>
+            <div class="layui-input-block">
+                <input name="name" placeholder="请输入姓名" type="text" class="layui-input" maxlength="20"
+                       lay-verType="tips" lay-verify="required" required/>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">手机</label>
+            <div class="layui-input-block">
+                <input name="mobile" placeholder="请输入手机" type="text" class="layui-input" maxlength="20"/>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">邮箱</label>
+            <div class="layui-input-block">
+                <input name="email" placeholder="请输入邮箱" type="text" class="layui-input" maxlength="100"/>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">角色</label>
+            <div class="layui-input-block" lay-filter="roleSelect">
+                <select name="roleId" lay-verType="tips" lay-verify="required" id="roleSelect">
+                    <option value="">请选择角色</option>
+                </select>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">简介</label>
+            <div class="layui-input-block">
+                <textarea name="profile" placeholder="请输入内容" class="layui-textarea" maxlength="250"></textarea>
+            </div>
+        </div>
+        <div class="layui-form-item text-right">
+            <button class="layui-btn layui-btn-primary" type="button" ew-event="closePageDialog">取消</button>
+            <button class="layui-btn" lay-filter="modelSubmit" lay-submit>保存</button>
+        </div>
+    </form>
+</script>
+<!-- js部分 -->
+<div th:replace="admin/include/resources :: script"></div>
+<script>
+    layui.use(['layer', 'form', 'table', 'admin'], function () {
+        var $ = layui.jquery;
+        var layer = layui.layer;
+        var form = layui.form;
+        var table = layui.table;
+        var admin = layui.admin;
+
+
+        // 渲染表格
+        var insTb = table.render({
+            elem: '#tableList',
+            url: SERVER_CTX + '/sys/user/list',
+            page: true,
+            toolbar: true,
+            cellMinWidth: 100,
+            defaultToolbar: ['filter'],
+            cols: [
+                    [{type: 'numbers', title: '序号'},
+                    {field: 'username', title: '用户名'},
+                    {field: 'name', title: '姓名'},
+                    {field: 'mobile', title: '手机'},
+                    {field: 'email', title: '邮箱'},
+                    {
+                        field: 'adminFlag', align: 'center', templet: function (d) {
+                            var status = {
+                                0:'否',
+                                1:'是'
+                            };
+                            return status[d.adminFlag];
+                        }, title: '超级管理员'
+                    },
+                    {field: 'createTime', title: '创建时间'},
+                    {field: 'status', templet: '#tableStatus', title: '状态'},
+                    {align: 'center', toolbar: '#tableActionBar', title: '操作', minWidth: 200}
+                ]
+            ],
+            parseData: function(res){ //res 即为原始返回的数据
+                return {
+                    "code": res.code, //解析接口状态
+                    "msg": res.message, //解析提示文本
+                    "count": res.data?res.data.totalElements:null, //解析数据长度
+                    "data": res.data?res.data.content:null //解析数据列表
+                };
+            }
+        });
+
+        // 添加
+        $('#btnAdd').click(function () {
+            showEditModel();
+        });
+
+        // 搜索
+        form.on('submit(formSubSearch)', function (data) {
+            insTb.reload({where: data.field}, 'data');
+        });
+
+        // 工具条点击事件
+        table.on('tool(tableList)', function (obj) {
+            var data = obj.data;
+            var layEvent = obj.event;
+            if (layEvent === 'edit') { // 修改
+                showEditModel(data);
+            } else if (layEvent === 'del') { // 删除
+                doDel(obj);
+            } else if (layEvent === 'reset') { // 重置密码
+                resetPwd(data.id);
+            }
+        });
+
+        // 显示表单弹窗
+        function showEditModel(data) {
+            admin.open({
+                type: 1,
+                title: (data ? '修改' : '添加'),
+                content: $('#model').html(),
+                success: function (layero, dIndex) {
+                    $(layero).children('.layui-layer-content').css('overflow', 'visible');
+                    var url = data ? '/sys/user/update' : '/sys/user/add';
+                    admin.req(SERVER_CTX + "/sys/role/selectList",{},function(res){
+                        var list = res.data;
+                        var sel = $("#roleSelect");
+                        for(var i = 0;i<list.length;i++){
+                            var op = $("<option value='"+list[i].id+"'>"+list[i].roleName+"</option>").appendTo(sel);
+                        }
+                        form.render('select','roleSelect');
+                        // 回显数据
+                        form.val('modelForm', data);
+                        // 表单提交事件
+                        form.on('submit(modelSubmit)', function (data) {
+                            layer.load(2);
+                            admin.req(SERVER_CTX + url, data.field, function (res) {
+                                layer.close(dIndex);
+                                layer.msg(res.message, {icon: 1});
+                                insTb.reload();
+                            }, 'post');
+                            return false;
+                        });
+                    },'get');
+
+
+                }
+            });
+        }
+
+        // 删除
+        function doDel(obj) {
+            layer.confirm('确定要删除“' + obj.data.username + '”吗？', {
+                shade: .1,
+                skin: 'layui-layer-admin'
+            }, function (i) {
+                layer.close(i);
+                layer.load(2);
+                admin.req(SERVER_CTX + '/sys/user/delete', {
+                    id: obj.data.id
+                }, function (res) {
+                    layer.msg(res.message, {icon: 1});
+                    obj.del();
+                }, 'post');
+            });
+        }
+
+        // 修改用户状态
+        form.on('switch(ckStatus)', function (obj) {
+            layer.load(2);
+            $.post(SERVER_CTX + '/sys/user/updateStatus', {
+                id: obj.elem.value,
+                status: obj.elem.checked ? 0 : 1
+            }, function (res) {
+                layer.closeAll('loading');
+                if (res.code == 0) {
+                    layer.msg(res.message, {icon: 1});
+                } else {
+                    layer.msg(res.message, {icon: 2});
+                    $(obj.elem).prop('checked', !obj.elem.checked);
+                    form.render('checkbox');
+                }
+            }, 'json');
+        });
+
+        // 重置密码
+        function resetPwd(userId) {
+            layer.prompt({
+                title: '请输入重置密码',
+                skin: 'layui-layer-admin layui-layer-prompt',
+                shade: .1
+            }, function (value, index, elem) {
+                layer.load(2);
+                admin.req(SERVER_CTX + '/sys/user/resetPwd', {
+                    id: userId,
+                    password: value
+                }, function (res) {
+                    layer.close(index);
+                    layer.msg(res.message, {icon: 1});
+                }, 'post');
+            });
+        }
+
+    });
+</script>
+</body>
+</html>

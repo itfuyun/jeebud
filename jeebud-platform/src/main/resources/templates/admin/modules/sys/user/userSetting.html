@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>个人中心</title>
+    <div th:replace="admin/include/resources :: head"></div>
+    <style>
+        .user-info-head {
+            width: 110px;
+            height: 110px;
+            position: relative;
+            display: inline-block;
+            border-radius: 50%;
+            border: 2px solid #eee;
+        }
+
+        .user-info-head:hover:after {
+            content: '\e65d';
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            color: #eee;
+            background: rgba(0, 0, 0, 0.5);
+            font-family: layui-icon;
+            font-size: 24px;
+            font-style: normal;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            cursor: pointer;
+            line-height: 110px;
+            border-radius: 50%;
+        }
+
+        .user-info-head img {
+            width: 110px;
+            height: 110px;
+            border-radius: 50%;
+        }
+
+
+        .info-list-item > .layui-icon {
+            position: absolute;
+        }
+
+        .info-list-item > p {
+            padding-left: 30px;
+        }
+
+        .bd-list-item {
+            padding: 14px 0;
+            border-bottom: 1px solid #e8e8e8;
+            position: relative;
+        }
+
+        .bd-list-item .bd-list-item-img {
+            width: 48px;
+            height: 48px;
+            line-height: 48px;
+            margin-right: 12px;
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+        .bd-list-item .bd-list-item-content {
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+        .bd-list-item .bd-list-item-lable {
+            margin-bottom: 4px;
+            color: #333;
+        }
+
+        .bd-list-item .bd-list-item-oper {
+            position: absolute;
+            right: 0;
+            top: 50%;
+            text-decoration: none !important;
+            cursor: pointer;
+            transform: translateY(-50%);
+        }
+
+        .user-info-form .layui-form-item {
+            margin-bottom: 25px;
+        }
+    </style>
+</head>
+<body>
+
+<!-- 加载动画 -->
+<div class="page-loading">
+    <div class="ball-loader">
+        <span></span><span></span><span></span><span></span>
+    </div>
+</div>
+
+<!-- 正文开始 -->
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-sm12 layui-col-md12">
+            <div class="layui-card">
+                <div class="layui-card-body">
+
+                    <div class="layui-tab layui-tab-brief" lay-filter="userInfoTab">
+                        <ul class="layui-tab-title">
+                            <li class="layui-this">基本信息</li>
+                            <!--<li>账号安全</li>-->
+                        </ul>
+                        <div class="layui-tab-content">
+                            <div class="layui-tab-item layui-show">
+                                <div class="layui-form user-info-form layui-text" style="max-width: 400px;padding-top: 25px;">
+                                    <div class="layui-form-item">
+                                        <input type="hidden" th:value="${user.avatar}" name="avatar" id="avatar">
+                                        <label class="layui-form-label">头像:</label>
+                                        <div class="layui-input-block">
+                                            <button id="avatarUpload" class="layui-btn layui-btn-sm layui-btn-normal icon-btn">
+                                                <i class="layui-icon">&#xe681;</i>更换头像
+                                            </button>
+                                        </div>
+                                        <img th:src="(${user.avatar==null||user.avatar==''}) ? @{{resCtx}/assets/images/head.png(resCtx=${resCtx})} : ${user.avatar}" width="87px" height="87px" id="preview">
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">姓名:</label>
+                                        <div class="layui-input-block">
+                                            <input type="text" name="name" th:value="${user.name}"
+                                                   class="layui-input" lay-verify="required" required/>
+                                        </div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">邮箱:</label>
+                                        <div class="layui-input-block">
+                                            <input type="text" name="email" th:value="${user.email}"
+                                                   class="layui-input" />
+                                        </div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">手机:</label>
+                                        <div class="layui-input-block">
+                                            <input type="text" name="mobile" th:value="${user.mobile}"
+                                                   class="layui-input"/>
+                                        </div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">简介:</label>
+                                        <div class="layui-input-block">
+                                            <textarea name="profile" placeholder="简介" class="layui-textarea" th:text="${user.profile}"></textarea>
+                                        </div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <div class="layui-input-block">
+                                            <button class="layui-btn" lay-filter="userInfoSubmit" lay-submit>
+                                                保存
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class="layui-tab-item" style="padding: 6px 25px 30px 25px;">
+
+                                <div class="bd-list layui-text">
+                                    <div class="bd-list-item">
+                                        <div class="bd-list-item-content">
+                                            <div class="bd-list-item-lable">密保手机</div>
+                                            <div class="bd-list-item-text">已绑定手机：138****8293</div>
+                                        </div>
+                                        <a class="bd-list-item-oper">修改</a>
+                                    </div>
+                                    <div class="bd-list-item">
+                                        <div class="bd-list-item-content">
+                                            <div class="bd-list-item-lable">密保邮箱</div>
+                                            <div class="bd-list-item-text">已绑定邮箱：ant***sign.com</div>
+                                        </div>
+                                        <a class="bd-list-item-oper">修改</a>
+                                    </div>
+                                    <div class="bd-list-item">
+                                        <div class="bd-list-item-img">
+                                            <i class="layui-icon layui-icon-login-qq"
+                                               style="color: #3492ED;font-size: 48px;"></i>
+                                        </div>
+                                        <div class="bd-list-item-content">
+                                            <div class="bd-list-item-lable">绑定QQ</div>
+                                            <div class="bd-list-item-text">当前未绑定QQ账号</div>
+                                        </div>
+                                        <a class="bd-list-item-oper">绑定</a>
+                                    </div>
+                                    <div class="bd-list-item">
+                                        <div class="bd-list-item-img">
+                                            <i class="layui-icon layui-icon-login-wechat"
+                                               style="color: #4DAF29;font-size: 48px;"></i>
+                                        </div>
+                                        <div class="bd-list-item-content">
+                                            <div class="bd-list-item-lable">绑定微信</div>
+                                            <div class="bd-list-item-text">当前未绑定绑定微信账号</div>
+                                        </div>
+                                        <a class="bd-list-item-oper">绑定</a>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- js部分 -->
+<div th:replace="admin/include/resources :: script"></div>
+
+<script>
+    layui.use(['layer', 'form', 'admin', 'upload'], function () {
+        var $ = layui.jquery;
+        var layer = layui.layer;
+        var form = layui.form;
+        var admin = layui.admin;
+        var upload = layui.upload;
+
+
+        // 上传
+        upload.render({
+            elem: '#avatarUpload',
+            url: SERVER_CTX + '/upload',
+            choose: function (obj) {
+                layer.load(2);
+            },
+            done: function (res, index, upload) {
+                layer.closeAll('loading');
+                if (res.code == 0) {
+                    layer.msg('上传成功', {icon: 1});
+                    var url = res.data;
+                    $("#preview").attr("src",url);
+                    $("#avatar").val(url);
+                } else {
+                    layer.msg('上传失败', {icon: 2});
+                }
+            },
+            error: function () {
+                layer.closeAll('loading');
+                layer.msg('上传失败', {icon: 2});
+            },
+            accept: 'image'
+        });
+        // 表单提交事件
+        form.on('submit(userInfoSubmit)', function (data) {
+            layer.load(2);
+            admin.req(SERVER_CTX + "/sys/user/updateUserInfo", data.field, function (res) {
+                layer.msg(res.message, {icon: 1});
+            }, 'post');
+            return false;
+        });
+
+        // 选择头像
+        $('#imgHead').click(function () {
+            admin.cropImg({
+                onCrop: function (res) {
+                    $('#imgHead>img').attr('src', res);
+                }
+            });
+        });
+
+    });
+</script>
+</body>
+
+</html>

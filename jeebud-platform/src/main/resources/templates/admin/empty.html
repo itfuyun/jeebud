@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>空白页面</title>
+    <div th:replace="admin/include/resources :: head"></div>
+</head>
+<body>
+
+<!-- 加载动画 -->
+<div th:replace="admin/include/common :: loading"></div>
+
+<!-- 正文开始 -->
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-card-body">
+            <h1 class="text-center" style="padding: 80px 0;">Hello Word !</h1>
+        </div>
+    </div>
+</div>
+
+<!-- js部分 -->
+<div th:replace="admin/include/resources :: script"></div>
+<script>
+    layui.use(['layer'], function () {
+        var $ = layui.jquery;
+        var layer = layui.layer;
+
+    });
+</script>
+</body>
+</html>

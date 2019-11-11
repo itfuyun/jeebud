@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>任务日志列表</title>
+    <div th:replace="admin/include/resources :: head"></div>
+</head>
+<body>
+
+<!-- 加载动画 -->
+<div th:replace="admin/include/common :: loading"></div>
+
+<!-- 正文开始 -->
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-card-body table-tool-mini">
+            <div class="layui-form toolbar">
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label w-auto">任&nbsp;&nbsp;务&nbsp;&nbsp;名：</label>
+                        <div class="layui-input-inline mr0">
+                            <input name="jobName" class="layui-input" type="text" placeholder="输入任务名"/>
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label w-auto">方&nbsp;&nbsp;法&nbsp;&nbsp;名：</label>
+                        <div class="layui-input-inline mr0">
+                            <input name="methodName" class="layui-input" type="text" placeholder="输入方法名"/>
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label w-auto">状&emsp;&emsp;态：</label>
+                        <div class="layui-input-inline mr0">
+                            <select name="status">
+                                <option value="">请选择</option>
+                                <option value="0">成功</option>
+                                <option value="1">失败</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="layui-inline" style="padding-right: 110px;">
+                        <button class="layui-btn icon-btn" lay-filter="formSubSearch" lay-submit>
+                            <i class="layui-icon">&#xe615;</i>搜索
+                        </button>
+                        <button shiro:hasPermission="i:quartz:log:clear" id="btnClear" class="layui-btn layui-btn-danger icon-btn"><i class="layui-icon">&#xe640</i>清空</button>
+                    </div>
+                </div>
+            </div>
+
+            <table class="layui-table" id="tableList" lay-filter="tableList"></table>
+        </div>
+    </div>
+</div>
+<!-- js部分 -->
+<div th:replace="admin/include/resources :: script"></div>
+<script>
+    layui.use(['layer', 'form', 'table', 'admin'], function () {
+        var $ = layui.jquery;
+        var layer = layui.layer;
+        var form = layui.form;
+        var table = layui.table;
+        var admin = layui.admin;
+
+
+        // 渲染表格
+        var insTb = table.render({
+            elem: '#tableList',
+            url: SERVER_CTX + '/quartz/log/list?sort=id',
+            page: true,
+            toolbar: true,
+            cellMinWidth: 100,
+            defaultToolbar: ['filter'],
+            cols: [
+                [{type: 'numbers', title: '序号'},
+                {field: 'jobName', title: '任务名'},
+                {field: 'jobGroup', title: '任务组'},
+                {field: 'methodName', title: '方法名'},
+                {field: 'methodParams', title: '参数'},
+                {field: 'jobMessage', title: '执行记录'},
+                {
+                    title: '状态', templet: function (d) {
+                        var strs = ['<span class="layui-badge layui-bg-green">成功</span>', '<span class="layui-badge layui-bg-danger">失败</span>'];
+                        return strs[d.status];
+                    }, align: 'center'
+                },
+                {field: 'exceptionInfo', title: '异常信息'},
+                {field: 'createTime', title: '操作时间', sort: true}
+            ]
+            ],
+            parseData: function(res){ //res 即为原始返回的数据
+                return {
+                    "code": res.code, //解析接口状态
+                    "msg": res.message, //解析提示文本
+                    "count": res.data?res.data.totalElements:null, //解析数据长度
+                    "data": res.data?res.data.content:null //解析数据列表
+                };
+            }
+        });
+
+        // 搜索
+        form.on('submit(formSubSearch)', function (data) {
+            insTb.reload({where: data.field}, 'data');
+        });
+
+        // 清空
+        $('#btnClear').click(function () {
+            layer.confirm('确定要清空所有日志吗？', {
+                shade: .1,
+                skin: 'layui-layer-admin'
+            }, function (i) {
+                layer.close(i);
+                layer.load(2);
+                admin.req(SERVER_CTX + '/quartz/log/clear', {}, function (res) {
+                    layer.msg(res.message, {icon: 1});
+                    insTb.reload()
+                }, 'post');
+            });
+        });
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,70 @@
+package ${package}.module.${moduleName}.service.impl;
+
+import ${package}.core.data.jpa.domain.PageQuery;
+import ${package}.common.exception.JeebudException;
+import ${package}.common.util.ObjectUtils;
+import ${package}.module.${moduleName}.model.entity.${className};
+import ${package}.module.${moduleName}.repository.${className}Repository;
+import ${package}.module.${moduleName}.service.${className}Service;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.stereotype.Service;
+
+/**
+ * <p>Description: </p>
+ * <p>Copyright (c) www.jeebud.com Inc. All Rights Reserved.</p>
+ *
+ * @author ${author}
+ */
+@Service
+public class ${className}ServiceImpl implements ${className}Service {
+
+    @Autowired
+    ${className}Repository ${classname}Repository;
+
+    /**
+     * 获取列表
+     *
+     * @param query
+     * @return
+     */
+    @Override
+    public Page<${className}> page(PageQuery query) {
+        return ${classname}Repository.search(query);
+    }
+
+    /**
+    * 插入
+    *
+    * @param ${classname}
+    */
+    @Override
+    public Long insert(${className} ${classname}) {
+		${classname}.setId(null);
+		${classname}Repository.save(${classname});
+		return ${classname}.getId();
+    }
+
+    /**
+     * 修改
+     *
+     * @param ${classname}
+     */
+    @Override
+    public void update(${className} ${classname}) {
+        if (ObjectUtils.isNull(${classname}.getId())) {
+            throw new JeebudException("ID不能为空");
+        }
+		${classname}Repository.save(${classname});
+    }
+
+    /**
+     * 删除
+     *
+     * @param id
+     */
+    @Override
+    public void delete(Long id) {
+		${classname}Repository.deleteById(id);
+    }
+}

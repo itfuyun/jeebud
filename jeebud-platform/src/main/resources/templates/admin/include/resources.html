@@ -1,0 +1,16 @@
+<th:block th:fragment="head">
+    <link th:href="@{{resCtx}/assets/images/favicon.ico(resCtx=${resCtx})}" rel="icon">
+    <link rel="stylesheet" th:href="@{{resCtx}/assets/libs/layui/css/layui.css(resCtx=${resCtx})}"/>
+    <link rel="stylesheet" th:href="@{{resCtx}/assets/module/admin.css(resCtx=${resCtx})}"/>
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</th:block>
+<th:block th:fragment="script">
+    <script type="text/javascript">
+        var SERVER_CTX = "[[${serverCtx}]]";
+    </script>
+    <script type="text/javascript" th:src="@{{resCtx}/assets/libs/layui/layui.js(resCtx=${resCtx})}"></script>
+    <script type="text/javascript" th:src="@{{resCtx}/assets/js/common.js(resCtx=${resCtx})}"></script>
+</th:block>

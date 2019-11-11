@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>权限列表</title>
+    <div th:replace="admin/include/resources :: head"></div>
+</head>
+<body>
+
+<!-- 加载动画 -->
+<div th:replace="admin/include/common :: loading"></div>
+
+<!-- 正文开始 -->
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-card-body table-tool-mini">
+            <div class="layui-form toolbar">
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label w-auto">关&nbsp;&nbsp;键&nbsp;&nbsp;字：</label>
+                        <div class="layui-input-inline mr0">
+                            <input name="name" class="layui-input" id="edtSearch" type="text" placeholder="输入搜索关键字"/>
+                        </div>
+                    </div>
+                    <div class="layui-inline" style="padding-right: 110px;">
+                        <button class="layui-btn icon-btn" id="btnSearch">
+                            <i class="layui-icon">&#xe615;</i>搜索
+                        </button>
+                        <button shiro:hasPermission="i:sys:permission:add" id="btnAdd" class="layui-btn icon-btn"><i class="layui-icon">&#xe654;</i>添加</button>
+                        <button id="btnExpandAuth" class="layui-btn icon-btn">全部展开</button>
+                        <button id="btnFoldAuth" class="layui-btn icon-btn">全部折叠</button>
+                    </div>
+                </div>
+            </div>
+
+            <table class="layui-table" id="tableList" lay-filter="tableList"></table>
+        </div>
+    </div>
+</div>
+<!-- 表格操作列 -->
+<script type="text/html" id="tableActionBar">
+    <a shiro:hasPermission="i:sys:permission:update" class="layui-btn layui-btn-primary layui-btn-xs" lay-event="edit">修改</a>
+    <a shiro:hasPermission="i:sys:permission:delete" class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+</script>
+<!-- 表单弹窗 -->
+
+<!-- js部分 -->
+<div th:replace="admin/include/resources :: script"></div>
+<script>
+    layui.use(['layer', 'form', 'table', 'treetable', 'admin', 'zTree','IconFonts'], function () {
+        var $ = layui.jquery;
+        var layer = layui.layer;
+        var form = layui.form;
+        var table = layui.table
+        var treetable = layui.treetable;
+        var admin = layui.admin;
+        var iconFonts=layui.IconFonts;
+
+
+
+        // 渲染表格
+        function renderTable() {
+            treetable.render({
+                elem: '#tableList',
+                url: SERVER_CTX + '/sys/permission/list',
+                treeColIndex: 1,
+                treeSpid: 0,
+                treeIdName: 'id',
+                treePidName: 'pid',
+                cellMinWidth: 100,
+                cols: [
+                    [{type: 'numbers', title: '序号'},
+                        {field: 'name', title: '权限名'},
+                        {field: 'code', title: '权限编码'},
+                        {field: 'url', title: '路径'},
+                        {field: 'icon', title: '图标'},
+                        {field: 'sortNum', title: '排序'},
+                        {
+                            title: '类型', templet: function (d) {
+                                var strs = ['<span class="layui-badge layui-bg-blue">菜单</span>', '<span class="layui-badge layui-bg-orange">按钮</span>'];
+                                return strs[d.type];
+                            }, align: 'center'
+                        },
+                        {align: 'center', toolbar: '#tableActionBar', title: '操作', minWidth: 200}
+                    ]
+                ],
+
+                done: function () {
+                    //默认折叠
+                    treetable.foldAll('#tableList');
+                }
+            });
+        }
+        renderTable();
+        // 添加
+        $('#btnAdd').click(function () {
+            showEditModel();
+        });
+
+        // 工具条点击事件
+        table.on('tool(tableList)', function (obj) {
+            var data = obj.data;
+            var layEvent = obj.event;
+            if (layEvent === 'edit') { // 修改
+                showEditModel(data);
+            } else if (layEvent === 'del') { // 删除
+                doDel(obj);
+            }
+        });
+
+        // 搜索按钮点击事件
+        $('#btnSearch').click(function () {
+            $('#edtSearch').removeClass('layui-form-danger');
+            var keyword = $('#edtSearch').val();
+            var $tds = $('#tableList').next('.treeTable').find('.layui-table-body tbody tr td');
+            $tds.css('background-color', 'transparent');
+            if (!keyword) {
+                layer.tips('请输入关键字', '#edtSearch', {tips: [1, '#ff4c4c']});
+                $('#edtSearch').addClass('layui-form-danger');
+                $('#edtSearch').focus();
+                return;
+            }
+            var searchCount = 0;
+            $tds.each(function () {
+                if ($(this).text().indexOf(keyword) >= 0) {
+                    $(this).css('background-color', '#FAE6A0');
+                    if (searchCount == 0) {
+                        $('body,html').stop(true);
+                        $('body,html').animate({scrollTop: $(this).offset().top - 150}, 500);
+                    }
+                    searchCount++;
+                }
+            });
+            if (searchCount == 0) {
+                layer.msg("没有匹配结果", {icon: 5, anim: 6});
+            } else {
+                treetable.expandAll('#tableList');
+            }
+        });
+
+        // 显示表单弹窗
+        function showEditModel(data) {
+            var modalUrl = data ? '/sys/permission/modal?id=' + data.pid : '/sys/permission/modal';
+            admin.open({
+                type: 1,
+                area: '670px',
+                title: (data ? '修改' : '添加'),
+                url: SERVER_CTX + modalUrl,
+                success: function (layero, dIndex) {
+                    $("#selectInput").click(function(){
+                        $("#permissionTree").show();
+                    });
+                    //图标选择器
+                    iconFonts.render({
+                        // 选择器，推荐使用input
+                        elem: '#iconFonts', //选择器ID
+                        // 数据类型：fontClass/layui_icon，
+                        type: 'layui_icon',
+                        // 是否开启搜索：true/false
+                        search: false,
+                        // 是否开启分页
+                        page: true,
+                        // 每页显示数量，默认12
+                        limit: 12,
+                        // 点击回调
+                        click: function (data) {
+                            $("#iconFonts").val(data.icon)
+                        }
+                    });
+                    iconFonts.checkIcon("iconFonts",data?data.icon:'',"layui_icon");
+                    layer.load(2);
+                    var setting = {check: {enable: false}, data: {simpleData: {enable: true}},callback:{beforeClick: beforeClick}};
+                    admin.req(SERVER_CTX + '/sys/permission/selectList',{}, function (res) {
+                            $.fn.zTree.init($('#permissionTree'), setting, res.data);
+                            var url = data ? '/sys/permission/update' : '/sys/permission/add';
+                            // 回显数据
+                            form.val('modelForm', data);
+                            // 表单提交事件
+                            form.on('submit(modelSubmit)', function (data) {
+                                layer.load(2);
+                                admin.req(SERVER_CTX + url, data.field, function (res) {
+                                    layer.close(dIndex);
+                                    layer.msg(res.message, {icon: 1});
+                                    renderTable();
+                                }, 'post');
+                                return false;
+                            });
+
+                    }, 'get');
+                },
+            });
+        }
+
+        // 删除
+        function doDel(obj) {
+            layer.confirm('确定要删除“' + obj.data.name + '”吗？', {
+                shade: .1,
+                skin: 'layui-layer-admin'
+            }, function (i) {
+                layer.close(i);
+                layer.load(2);
+                admin.req(SERVER_CTX + '/sys/permission/delete', {
+                    id: obj.data.id
+                }, function (res) {
+                    layer.msg(res.message, {icon: 1});
+                    renderTable();
+                }, 'post');
+            });
+        }
+
+        $('#btnExpandAuth').click(function () {
+            treetable.expandAll('#tableList');
+        });
+
+        $('#btnFoldAuth').click(function () {
+            treetable.foldAll('#tableList');
+        });
+
+        function beforeClick(treeId, treeNode) {
+            $("#parentName").val(treeNode.name)
+            $("#pid").val(treeNode.id);
+            $("#permissionTree").hide();
+        }
+
+    });
+</script>
+</body>
+</html>
