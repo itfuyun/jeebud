@@ -25,7 +25,7 @@ import java.util.List;
  * @author ${author}
  */
 @Controller
-@RequestMapping("/${moduleName}/${classname}")
+@RequestMapping("${jeebud.sys.serverCtx}/${moduleName}/${classname}")
 public class ${className}Controller {
     /**
      * 模板前缀
