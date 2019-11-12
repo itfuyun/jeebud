@@ -166,7 +166,7 @@
                 admin.req(SERVER_CTX + '/${moduleName}/${classname}/delete', {
                     id: obj.data.id
                 }, function (res) {
-                    layer.msg(res.msg, {icon: 1});
+                    layer.msg(res.message, {icon: 1});
                     obj.del();
                 }, 'post');
             });
