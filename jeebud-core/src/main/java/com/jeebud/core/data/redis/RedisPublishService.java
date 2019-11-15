@@ -1,5 +1,6 @@
-package com.jeebud.core.websocket.redismq;
+package com.jeebud.core.data.redis;
 
+import com.jeebud.common.util.JsonUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
@@ -11,7 +12,7 @@ import org.springframework.stereotype.Component;
  * @author Tanxh(itfuyun@gmail.com)
  */
 @Component
-public class PublishService {
+public class RedisPublishService {
     @Autowired
     StringRedisTemplate redisTemplate;
 
@@ -22,6 +23,6 @@ public class PublishService {
      * @param message 消息信息
      */
     public void publish(String channel, Object message) {
-        redisTemplate.convertAndSend(channel, message);
+        redisTemplate.convertAndSend(channel, JsonUtils.toJsonString(message));
     }
 }

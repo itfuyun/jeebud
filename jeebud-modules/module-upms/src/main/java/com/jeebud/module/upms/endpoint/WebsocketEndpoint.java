@@ -2,14 +2,13 @@ package com.jeebud.module.upms.endpoint;
 
 import com.jeebud.common.constant.MsgTypeEnum;
 import com.jeebud.common.constant.SysConsts;
-import com.jeebud.common.util.JsonUtils;
 import com.jeebud.common.util.SpringUtils;
+import com.jeebud.core.data.redis.RedisPublishService;
 import com.jeebud.core.shiro.ShiroUser;
 import com.jeebud.core.websocket.WebSocketBeanManager;
 import com.jeebud.core.websocket.bean.SocketMsg;
 import com.jeebud.core.websocket.bean.WebSocketBean;
 import com.jeebud.core.websocket.conf.WebSocketConfig;
-import com.jeebud.core.websocket.redismq.PublishService;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -39,8 +38,8 @@ public class WebsocketEndpoint {
     /**
      * 因为@ServerEndpoint不支持注入
      */
-    private StringRedisTemplate redisTampate = SpringUtils.getBean(StringRedisTemplate.class);
-    private PublishService publishService = SpringUtils.getBean(PublishService.class);
+    private StringRedisTemplate redisTemplate = SpringUtils.getBean(StringRedisTemplate.class);
+    private RedisPublishService publishService = SpringUtils.getBean(RedisPublishService.class);
     private RedisMessageListenerContainer redisMessageListenerContainer = SpringUtils.getBean(RedisMessageListenerContainer.class);
 
     /**
@@ -90,7 +89,7 @@ public class WebsocketEndpoint {
         socketMsg.setContent(user.getName()+"："+message);
         socketMsg.setMsgType(MsgTypeEnum.TEXT);
         socketMsg.setScope(0);
-        publishService.publish(SysConsts.TOPIC_WEBSOCKET, JsonUtils.toJsonString(socketMsg));
+        publishService.publish(SysConsts.TOPIC_WEBSOCKET, socketMsg);
     }
 
     @OnError

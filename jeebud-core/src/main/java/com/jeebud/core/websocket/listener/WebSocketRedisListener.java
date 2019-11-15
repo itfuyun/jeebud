@@ -1,4 +1,4 @@
-package com.jeebud.core.websocket.redismq;
+package com.jeebud.core.websocket.listener;
 
 import com.jeebud.common.util.JsonUtils;
 import com.jeebud.core.websocket.WebSocketBeanManager;
@@ -18,10 +18,7 @@ import java.util.Map;
  * @author Tanxh(itfuyun@gmail.com)
  */
 @Data
-public class SubscribeListener implements MessageListener {
-
-
-    private WebSocketBean webSocketBean;
+public class WebSocketRedisListener implements MessageListener {
 
     /**
      * 订阅接收发布者的消息
@@ -30,7 +27,6 @@ public class SubscribeListener implements MessageListener {
     public void onMessage(Message message, byte[] pattern) {
         String msg = new String(message.getBody());
         System.out.println(new String(pattern) + "主题发布：" + msg);
-        ;
         SocketMsg socketMsg = null;
         try {
             socketMsg = JsonUtils.toJsonObject(msg, SocketMsg.class);

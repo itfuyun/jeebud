@@ -1,16 +1,17 @@
 package com.jeebud.module.upms.controller;
 
-import com.jeebud.core.captcha.Captcha;
-import com.jeebud.core.captcha.CaptchaCodeHelper;
 import com.jeebud.common.constant.CaptchaTypeEnum;
 import com.jeebud.common.constant.LoginTypeEnum;
 import com.jeebud.common.exception.JeebudException;
+import com.jeebud.common.util.IpUtils;
+import com.jeebud.core.captcha.Captcha;
+import com.jeebud.core.captcha.CaptchaCodeHelper;
 import com.jeebud.core.captcha.CaptchaException;
-import com.jeebud.core.shiro.util.ShiroUtils;
-import com.jeebud.core.web.RestEntity;
 import com.jeebud.core.data.redis.RedisService;
 import com.jeebud.core.log.LogPublisher;
 import com.jeebud.core.shiro.JeebudToken;
+import com.jeebud.core.shiro.util.ShiroUtils;
+import com.jeebud.core.web.RestEntity;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.IncorrectCredentialsException;
@@ -95,7 +96,7 @@ public class LoginController {
             throw new JeebudException("用户验证失败");
         }
         //记录日志
-        logPublisher.publishLoginLog(ShiroUtils.getCurrentUser(), request);
+        logPublisher.publishLoginLog(ShiroUtils.getCurrentUser(), IpUtils.getIpAddr(request));
         return RestEntity.ok().data(subject.getSession().getId().toString());
     }
 

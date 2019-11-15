@@ -4,11 +4,11 @@ import com.jeebud.common.util.IpUtils;
 import com.jeebud.common.util.JsonUtils;
 import com.jeebud.common.util.ObjectUtils;
 import com.jeebud.core.log.bean.LoginLogBean;
-import com.jeebud.core.shiro.util.ShiroUtils;
 import com.jeebud.core.log.bean.OperationLogBean;
 import com.jeebud.core.log.event.LoginLogEvent;
 import com.jeebud.core.log.event.OperationLogEvent;
 import com.jeebud.core.shiro.ShiroUser;
+import com.jeebud.core.shiro.util.ShiroUtils;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,13 +63,13 @@ public class LogPublisher {
      * 登陆日志消息
      *
      * @param shiroUser
-     * @param request
+     * @param ip
      */
     @Async
-    public void publishLoginLog(ShiroUser shiroUser, HttpServletRequest request){
+    public void publishLoginLog(ShiroUser shiroUser, String ip){
         //记录日志
         LoginLogBean loginLog = new LoginLogBean();
-        loginLog.setIp(IpUtils.getIpAddr(request));
+        loginLog.setIp(ip);
         ShiroUser user = ShiroUtils.getCurrentUser();
         loginLog.setLoginTime(new Date());
         loginLog.setUserId(user.getId());

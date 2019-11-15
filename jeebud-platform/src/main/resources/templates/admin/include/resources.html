@@ -9,7 +9,7 @@
 </th:block>
 <th:block th:fragment="script">
     <script type="text/javascript">
-        var SERVER_CTX = "[[${serverCtx}]]";
+        var SERVER_CTX = "[[${serverCtx}]]";var RES_CTX = "[[${resCtx}]]"
     </script>
     <script type="text/javascript" th:src="@{{resCtx}/assets/libs/layui/layui.js(resCtx=${resCtx})}"></script>
     <script type="text/javascript" th:src="@{{resCtx}/assets/js/common.js(resCtx=${resCtx})}"></script>

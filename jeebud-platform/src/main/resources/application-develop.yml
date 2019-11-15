@@ -33,7 +33,7 @@ spring:
     properties: {mail.smtp.ssl.trust: xxx,mail.smtp.socketFactory.class: javax.net.ssl.SSLSocketFactory,mail.smtp.socketFactory.port: 465,mail.smtp.auth: true,mail.smtp.starttls.enable: true,mail.smtp.starttls.required: true}
 jeebud:
   sys:
-    version: 0.4.0
+    version: 0.5.0
     resCtx: /admin
     serverCtx: /admin
     ignoreAuthenticationUrl: ${jeebud.sys.serverCtx}/login,${jeebud.sys.serverCtx}/doLogin,${jeebud.sys.serverCtx}/captcha/**,${jeebud.sys.resCtx}/assets/**,/favicon.ico #shiro认证忽略的路径
