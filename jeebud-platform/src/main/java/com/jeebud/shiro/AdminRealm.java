@@ -1,5 +1,6 @@
 package com.jeebud.shiro;
 
+import com.jeebud.common.constant.ParamConsts;
 import com.jeebud.common.constant.UserTypeEnum;
 import com.jeebud.common.util.ObjectUtils;
 import com.jeebud.common.util.StringUtils;
@@ -8,8 +9,10 @@ import com.jeebud.core.captcha.CaptchaException;
 import com.jeebud.core.data.redis.RedisService;
 import com.jeebud.core.shiro.JeebudToken;
 import com.jeebud.core.shiro.ShiroUser;
+import com.jeebud.module.upms.model.entity.Param;
 import com.jeebud.module.upms.model.entity.Permission;
 import com.jeebud.module.upms.model.entity.User;
+import com.jeebud.module.upms.service.ParamService;
 import com.jeebud.module.upms.service.PermissionService;
 import com.jeebud.module.upms.service.UserService;
 import lombok.extern.slf4j.Slf4j;
@@ -19,7 +22,6 @@ import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 
 import java.util.List;
@@ -42,8 +44,9 @@ public class AdminRealm extends AuthorizingRealm {
     @Autowired
     @Lazy
     RedisService redisService;
-    @Value("${jeebud.captcha.open}")
-    boolean open;
+    @Autowired
+    @Lazy
+    ParamService paramService;
 
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
@@ -68,6 +71,8 @@ public class AdminRealm extends AuthorizingRealm {
     @Override
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) throws AuthenticationException {
         JeebudToken jeebudToken = (JeebudToken) token;
+        Param captchaParam = paramService.findByParamKey(ParamConsts.PARAMKEY_CAPTCHA_OPEN);
+        boolean open = captchaParam.getParamValue().equals("1");
         if (open && !checkCaptcha(jeebudToken.getCaptchaKey(), jeebudToken.getCaptchaCode())) {
             throw new CaptchaException();
         }

@@ -71,8 +71,7 @@ public class BaseRepositoryImpl<T, D> extends SimpleJpaRepository<T, D> implemen
 
     private Sort getSort(Query query) {
         Sort.Direction direction = Sort.Direction.fromOptionalString(query.getDirection()).orElse(Sort.Direction.ASC);
-        List<String> listString = Arrays.asList(query.getSort().split(","));
-        Sort sort = new Sort(direction, listString);
+        Sort sort = Sort.by(direction, query.getSort().split(","));
         return sort;
     }
 

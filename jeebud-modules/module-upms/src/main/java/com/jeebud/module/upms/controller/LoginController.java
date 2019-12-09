@@ -1,17 +1,23 @@
 package com.jeebud.module.upms.controller;
 
+import com.jeebud.common.constant.ParamConsts;
+import com.jeebud.common.constant.SysConsts;
+import com.jeebud.common.util.IpUtils;
+import com.jeebud.common.util.ObjectUtils;
+import com.jeebud.common.util.StringUtils;
+import com.jeebud.core.captcha.Captcha;
+import com.jeebud.core.captcha.CaptchaCodeHelper;
 import com.jeebud.common.constant.CaptchaTypeEnum;
 import com.jeebud.common.constant.LoginTypeEnum;
 import com.jeebud.common.exception.JeebudException;
-import com.jeebud.common.util.IpUtils;
-import com.jeebud.core.captcha.Captcha;
-import com.jeebud.core.captcha.CaptchaCodeHelper;
 import com.jeebud.core.captcha.CaptchaException;
+import com.jeebud.core.shiro.util.ShiroUtils;
+import com.jeebud.core.web.RestEntity;
 import com.jeebud.core.data.redis.RedisService;
 import com.jeebud.core.log.LogPublisher;
 import com.jeebud.core.shiro.JeebudToken;
-import com.jeebud.core.shiro.util.ShiroUtils;
-import com.jeebud.core.web.RestEntity;
+import com.jeebud.module.upms.model.entity.Param;
+import com.jeebud.module.upms.service.ParamService;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.IncorrectCredentialsException;
@@ -43,14 +49,8 @@ public class LoginController {
     LogPublisher logPublisher;
     @Autowired
     RedisService redisService;
-    @Value("${jeebud.captcha.width}")
-    int width;
-    @Value("${jeebud.captcha.height}")
-    int height;
-    @Value("${jeebud.captcha.size}")
-    int size;
-    @Value("${jeebud.captcha.open}")
-    boolean open;
+    @Autowired
+    ParamService paramService;
     @Value("${jeebud.sys.serverCtx}")
     private String serverCtx;
 
@@ -61,9 +61,17 @@ public class LoginController {
      */
     @GetMapping("/login")
     public String login(Model model) throws IOException {
+        Param captchaOpenParam = paramService.findByParamKey(ParamConsts.PARAMKEY_CAPTCHA_OPEN);
+        boolean open = captchaOpenParam.getParamValue().equals("1");
         model.addAttribute("captchaOpen", open);
         if (open) {
-            Captcha captcha = CaptchaCodeHelper.generateCaptcha(width, height, size, CaptchaTypeEnum.BASE64_IMAGE);
+            int size = 4;
+            Param captchaSizeParam = paramService.findByParamKey(ParamConsts.PARAMKEY_CAPTCHA_SIZE);
+            String value = captchaSizeParam.getParamValue();
+            if(StringUtils.isNumeric(value)){
+                size = Integer.valueOf(value);
+            }
+            Captcha captcha = CaptchaCodeHelper.generateCaptcha(SysConsts.CAPTCHA_WIDTH, SysConsts.CAPTCHA_HEIGHT, size, CaptchaTypeEnum.BASE64_IMAGE);
             model.addAttribute("captcha", captcha);
             redisService.set(CaptchaCodeHelper.KEY_PREFIX + captcha.getCaptchaKey(), captcha.getValue(), 300);
         }

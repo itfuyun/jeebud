@@ -1,5 +1,6 @@
 package com.jeebud.core.websocket.listener;
 
+import com.jeebud.common.constant.CharConsts;
 import com.jeebud.common.util.JsonUtils;
 import com.jeebud.core.websocket.WebSocketBeanManager;
 import com.jeebud.core.websocket.bean.SocketMsg;
@@ -47,7 +48,7 @@ public class WebSocketRedisListener implements MessageListener {
                 //不限类型或者类型匹配
                 Session session = webSocketBean.getSession();
                 if (null != session && session.isOpen()) {
-                    if ("0".equals(socketMsg.getTo()) || socketMsg.getTo().equals(webSocketBean.getId().toString())) {
+                    if (CharConsts.CHAR_ZERO.equals(socketMsg.getTo()) || socketMsg.getTo().equals(webSocketBean.getId().toString())) {
                         session.getAsyncRemote().sendText(socketMsg.getContent());
                     }
                 }

@@ -1,5 +1,6 @@
 package com.jeebud.module.upms.service.impl;
 
+import com.jeebud.common.constant.CharConsts;
 import com.jeebud.common.constant.PermissionEnum;
 import com.jeebud.common.exception.JeebudException;
 import com.jeebud.common.util.Md5Utils;
@@ -209,7 +210,7 @@ public class UserServiceImpl implements UserService {
 
     private MenuVO convert(Permission permission) {
         String url = permission.getUrl();
-        if(ObjectUtils.isNotNull(url)&&url.startsWith("/")){
+        if(ObjectUtils.isNotNull(url)&&url.startsWith(CharConsts.CHAR_SLASH)){
             url = serverCtx + url;
         }
         MenuVO menuVO = new MenuVO();

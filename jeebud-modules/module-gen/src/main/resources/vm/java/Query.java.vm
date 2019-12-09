@@ -27,6 +27,8 @@ public class ${className}PageQuery extends PageQuery {
      */
 #if($column.attrType == 'String')
     @QueryField(name = "$column.attrname", type = QueryType.LIKE)
+#elseif($column.attrType == 'Date')
+    @QueryField(name = "$column.attrname", type = QueryType.BEWTEEN)
 #else
     @QueryField(name = "$column.attrname", type = QueryType.EQUAL)
 #end

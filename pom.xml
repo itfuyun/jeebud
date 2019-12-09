@@ -21,7 +21,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.1.9.RELEASE</version>
+        <version>2.2.1.RELEASE</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
@@ -40,7 +40,7 @@
         <tencent.cos.version>5.6.7</tencent.cos.version>
         <velocity.version>1.7</velocity.version>
         <commons.io.version>2.5</commons.io.version>
-        <weixin-java-mp.version>3.5.0</weixin-java-mp.version>
+        <weixin-java-mp.version>3.6.0</weixin-java-mp.version>
     </properties>
 
     <dependencies>
@@ -155,27 +155,4 @@
         <name>JeeBud</name>
         <url>https://www.jeebud.com</url>
     </organization>
-    <profiles>
-        <profile>
-            <id>develop</id>
-            <properties>
-                <profileActive>develop</profileActive>
-            </properties>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-        </profile>
-        <profile>
-            <id>test</id>
-            <properties>
-                <profileActive>test</profileActive>
-            </properties>
-        </profile>
-        <profile>
-            <id>master</id>
-            <properties>
-                <profileActive>master</profileActive>
-            </properties>
-        </profile>
-    </profiles>
 </project>

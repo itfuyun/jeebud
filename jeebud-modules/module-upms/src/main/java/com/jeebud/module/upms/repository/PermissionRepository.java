@@ -4,6 +4,7 @@ import com.jeebud.core.data.jpa.BaseRepository;
 import com.jeebud.module.upms.model.entity.Permission;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -37,7 +38,7 @@ public interface PermissionRepository extends BaseRepository<Permission, Long> {
      * @param ids
      * @return
      */
-    List<Permission> findByTypeAndIdIn(Integer type, Iterable<Long> ids);
+    List<Permission> findByTypeAndIdIn(Integer type, Collection<Long> ids);
 
     /**
      * 根据权限pid查询

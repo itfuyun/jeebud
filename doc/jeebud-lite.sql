@@ -1,20 +1,39 @@
-/*
-SQLyog Enterprise v12.5.0 (64 bit)
-MySQL - 5.7.18-20170830-log : Database - jeebud-lite
-*********************************************************************
-*/
+/*Table structure for table `cms_article` */
 
-/*!40101 SET NAMES utf8 */;
+DROP TABLE IF EXISTS `cms_article`;
 
-/*!40101 SET SQL_MODE=''*/;
+CREATE TABLE `cms_article` (
+  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `title` varchar(255) DEFAULT NULL COMMENT '标题',
+  `content` text COMMENT '内容',
+  `image` varchar(255) DEFAULT NULL COMMENT '封面',
+  `column_id` int(11) DEFAULT NULL COMMENT '栏目ID',
+  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  `update_time` datetime DEFAULT NULL COMMENT '更新时间',
+  `summary` varchar(500) DEFAULT NULL COMMENT '摘要',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COMMENT='内容';
 
-/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
-/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
-/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
-/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
-CREATE DATABASE /*!32312 IF NOT EXISTS*/`jeebud-lite` /*!40100 DEFAULT CHARACTER SET utf8mb4 */;
+/*Data for the table `cms_article` */
 
-USE `jeebud-lite`;
+insert  into `cms_article`(`id`,`title`,`content`,`image`,`column_id`,`create_time`,`update_time`,`summary`) values
+(1,'快讯！伊朗指挥官“放狠话”：任何袭击伊朗的国家都将变成冲突“主战场”','<p>【环球网报道&nbsp;记者&nbsp;王博雅琪】据法新社21日最新消息，在美伊紧张关系持续升级之际，伊朗伊斯兰革命卫队指挥官发出警告说，任何袭击伊朗的国家都将看到这样一幕：其领土变成(军事)冲突的&ldquo;主战场&rdquo;。</p>\n','https://jeebud-lite.oss-cn-shenzhen.aliyuncs.com/20191112/agzof81j2rgdn8pmqwmg.png',1,'2019-11-12 07:02:31',NULL,'伊朗指挥官“放狠话”：任何袭击伊朗的国家都将变成冲突“主战场”');
+
+/*Table structure for table `cms_column` */
+
+DROP TABLE IF EXISTS `cms_column`;
+
+CREATE TABLE `cms_column` (
+  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `name` varchar(255) DEFAULT NULL COMMENT '栏目名称',
+  `remarks` varchar(500) DEFAULT NULL COMMENT '备注',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COMMENT='栏目';
+
+/*Data for the table `cms_column` */
+
+insert  into `cms_column`(`id`,`name`,`remarks`) values
+(1,'行业资讯','行业资讯');
 
 /*Table structure for table `qrtz_job` */
 
@@ -40,7 +59,7 @@ CREATE TABLE `qrtz_job` (
 
 /*Data for the table `qrtz_job` */
 
-insert  into `qrtz_job`(`id`,`job_name`,`job_group`,`method_name`,`method_params`,`cron_expression`,`misfire_policy`,`concurrent`,`status`,`create_by`,`create_time`,`update_by`,`update_time`,`remarks`) values 
+insert  into `qrtz_job`(`id`,`job_name`,`job_group`,`method_name`,`method_params`,`cron_expression`,`misfire_policy`,`concurrent`,`status`,`create_by`,`create_time`,`update_by`,`update_time`,`remarks`) values
 (1,'jeebudJob','测试任务','runTask','test','0/5 * * * * ? *','2','0','0','admin','2018-03-16 11:33:00',NULL,NULL,NULL);
 
 /*Table structure for table `qrtz_job_log` */
@@ -59,7 +78,7 @@ CREATE TABLE `qrtz_job_log` (
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
   `update_time` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5324 DEFAULT CHARSET=utf8 COMMENT='定时任务调度日志表';
+) ENGINE=InnoDB AUTO_INCREMENT=5338 DEFAULT CHARSET=utf8 COMMENT='定时任务调度日志表';
 
 /*Data for the table `qrtz_job_log` */
 
@@ -74,7 +93,7 @@ CREATE TABLE `sys_login_log` (
   `login_time` datetime DEFAULT NULL,
   `ip` varchar(128) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=237 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=285 DEFAULT CHARSET=utf8mb4;
 
 /*Data for the table `sys_login_log` */
 
@@ -93,9 +112,33 @@ CREATE TABLE `sys_operation_log` (
   `ip` varchar(32) DEFAULT NULL,
   `info` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=260 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=371 DEFAULT CHARSET=utf8mb4;
 
 /*Data for the table `sys_operation_log` */
+
+insert  into `sys_operation_log`(`id`,`module`,`req_param`,`req_method`,`create_time`,`op_type`,`operator`,`ip`,`info`) values
+(370,'日志模块','{}','POST','2019-12-08 19:27:46','UPDATE','admin','192.168.4.78','清空操作日志');
+
+/*Table structure for table `sys_param` */
+
+DROP TABLE IF EXISTS `sys_param`;
+
+CREATE TABLE `sys_param` (
+  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+  `param_name` varchar(255) DEFAULT NULL COMMENT '参数名称',
+  `param_key` varchar(255) DEFAULT NULL COMMENT '参数键',
+  `param_value` varchar(1000) DEFAULT NULL COMMENT '参数值',
+  `param_group` varchar(255) DEFAULT NULL COMMENT '参数组',
+  `type` int(2) DEFAULT '0' COMMENT '类型',
+  `remarks` varchar(500) DEFAULT NULL COMMENT '备注',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COMMENT='参数';
+
+/*Data for the table `sys_param` */
+
+insert  into `sys_param`(`id`,`param_name`,`param_key`,`param_value`,`param_group`,`type`,`remarks`) values
+(1,'验证码开关','CAPTCHA_OPEN','1','SYS_GROUP',1,'0关闭，1开启'),
+(2,'验证码长度','CAPTCHA_SIZE','4','SYS_GROUP',1,'验证码长度位数，需开启验证码');
 
 /*Table structure for table `sys_permission` */
 
@@ -115,11 +158,11 @@ CREATE TABLE `sys_permission` (
   `update_time` datetime DEFAULT NULL,
   `update_by` varchar(64) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=64 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=91 DEFAULT CHARSET=utf8mb4;
 
 /*Data for the table `sys_permission` */
 
-insert  into `sys_permission`(`id`,`name`,`code`,`pid`,`url`,`type`,`sort_num`,`icon`,`create_time`,`create_by`,`update_time`,`update_by`) values 
+insert  into `sys_permission`(`id`,`name`,`code`,`pid`,`url`,`type`,`sort_num`,`icon`,`create_time`,`create_by`,`update_time`,`update_by`) values
 (1,'控制面板','',0,'javascript:;',0,10,'layui-icon-home',NULL,NULL,'2019-11-07 05:38:02','admin'),
 (2,'欢迎页',NULL,1,'/welcome',0,10,NULL,NULL,NULL,NULL,NULL),
 (4,'系统管理',NULL,0,'javascript:;',0,10,'layui-icon-set',NULL,NULL,NULL,NULL),
@@ -146,7 +189,7 @@ insert  into `sys_permission`(`id`,`name`,`code`,`pid`,`url`,`type`,`sort_num`,`
 (25,'登录日志','p:sys:log:login:list',31,'/sys/log/login/pageList',0,10,'',NULL,NULL,'2019-09-07 21:30:38','admin'),
 (26,'列表','i:sys:log:login:list',25,NULL,1,10,NULL,NULL,NULL,NULL,NULL),
 (28,'系统工具','',0,'javascript:;',0,1,'layui-icon-util','2019-09-07','admin','2019-11-07 05:30:54','admin'),
-(31,'日志管理','',4,'javascript:;',0,10,'','2019-09-07','admin',NULL,NULL),
+(31,'日志管理','',4,'javascript:;',0,9,'','2019-09-07','admin','2019-12-07 07:18:45','admin'),
 (32,'定时任务','p:quartz:job:list',28,'/quartz/job/pageList',0,10,'','2019-09-08','admin','2019-09-29 20:56:36','admin'),
 (33,'列表','i:quartz:job:list',32,'',1,10,'','2019-09-08','admin',NULL,NULL),
 (34,'新增','i:quartz:job:add',32,'',1,10,'','2019-09-08','admin',NULL,NULL),
@@ -165,7 +208,23 @@ insert  into `sys_permission`(`id`,`name`,`code`,`pid`,`url`,`type`,`sort_num`,`
 (52,'介绍页','',1,'/introduction',0,10,'','2019-09-09','admin','2019-09-09 21:47:13','admin'),
 (61,'WebSocket','',28,'/websocket',0,10,'','2019-09-24','admin','2019-09-24 08:02:24','admin'),
 (62,'Markdown','',28,'/markdown',0,10,'','2019-10-11','admin','2019-10-11 03:58:09','admin'),
-(63,'富文本','',28,'/editor',0,10,'','2019-10-11','admin',NULL,NULL);
+(63,'富文本','',28,'/editor',0,10,'','2019-10-11','admin',NULL,NULL),
+(70,'CMS管理','',0,'javascript:;',0,10,'layui-icon-template-1','2019-11-12','admin','2019-11-14 02:32:42','admin'),
+(71,'栏目管理','p:cms:column:list',70,'/cms/column/pageList',0,10,'','2019-11-12','admin',NULL,NULL),
+(72,'内容管理','p:cms:article:list',70,'/cms/article/pageList',0,10,'','2019-11-12','admin',NULL,NULL),
+(73,'列表','i:cms:column:list',71,'',1,10,'','2019-11-12','admin','2019-11-12 06:33:49','admin'),
+(74,'新增','i:cms:column:add',71,'',1,10,'','2019-11-12','admin','2019-11-12 06:34:01','admin'),
+(75,'修改','i:cms:column:update',71,'',1,10,'','2019-11-12','admin','2019-11-12 06:34:11','admin'),
+(76,'删除','i:cms:column:delete',71,'',1,10,'','2019-11-12','admin','2019-11-12 06:34:23','admin'),
+(77,'列表','i:cms:article:list',72,'',1,10,'','2019-11-12','admin',NULL,NULL),
+(78,'新增','i:cms:article:add',72,'',1,10,'','2019-11-12','admin',NULL,NULL),
+(79,'修改','i:cms:article:update',72,'',1,10,'','2019-11-12','admin',NULL,NULL),
+(80,'删除','i:cms:article:delete',72,'',1,10,'','2019-11-12','admin','2019-11-12 06:37:29','admin'),
+(86,'参数管理','p:sys:param:list',4,'/sys/param/pageList',0,10,'','2019-12-07','admin',NULL,NULL),
+(87,'列表','i:sys:param:list',86,'',1,10,'','2019-12-07','admin',NULL,NULL),
+(88,'新增','i:sys:param:add',86,'',1,10,'','2019-12-07','admin',NULL,NULL),
+(89,'修改','i:sys:param:update',86,'',1,10,'','2019-12-07','admin',NULL,NULL),
+(90,'删除','i:sys:param:delete',86,'',1,10,'','2019-12-07','admin',NULL,NULL);
 
 /*Table structure for table `sys_role` */
 
@@ -184,7 +243,7 @@ CREATE TABLE `sys_role` (
 
 /*Data for the table `sys_role` */
 
-insert  into `sys_role`(`id`,`role_name`,`remarks`,`create_time`,`create_by`,`update_time`,`update_by`) values 
+insert  into `sys_role`(`id`,`role_name`,`remarks`,`create_time`,`create_by`,`update_time`,`update_by`) values
 (1,'系统管理员','系统管理员','2019-09-05 19:37:10',NULL,'2019-09-06 03:36:27','test'),
 (4,'普通管理员','普通管理员','2019-09-05 19:37:08',NULL,NULL,NULL),
 (9,'测试用户','测试用户','2019-09-05 19:31:13','admin','2019-10-12 08:35:01','admin');
@@ -202,7 +261,7 @@ CREATE TABLE `sys_role_permission` (
 
 /*Data for the table `sys_role_permission` */
 
-insert  into `sys_role_permission`(`id`,`role_id`,`permission_id`) values 
+insert  into `sys_role_permission`(`id`,`role_id`,`permission_id`) values
 (3,8,1),
 (4,8,3),
 (5,4,1),
@@ -324,11 +383,7 @@ CREATE TABLE `sys_user` (
 
 /*Data for the table `sys_user` */
 
-insert  into `sys_user`(`id`,`username`,`password`,`status`,`name`,`admin_flag`,`role_id`,`create_time`,`create_by`,`update_time`,`update_by`,`avatar`,`email`,`mobile`,`profile`) values 
-(7,'admin','e10adc3949ba59abbe56e057f20f883e',0,'超级管理员',1,1,'2019-09-05',NULL,'2019-11-10','admin','https://jeebud-lite.oss-cn-shenzhen.aliyuncs.com/20190907/97l9nb2swhh0l6phnvoz.png','15774124@qq.com','18866666666','一切都是浮云'),
+insert  into `sys_user`(`id`,`username`,`password`,`status`,`name`,`admin_flag`,`role_id`,`create_time`,`create_by`,`update_time`,`update_by`,`avatar`,`email`,`mobile`,`profile`) values
+(7,'admin','e10adc3949ba59abbe56e057f20f883e',0,'超级管理员',1,1,'2019-09-05',NULL,'2019-12-08','admin','https://jeebud-lite.oss-cn-shenzhen.aliyuncs.com/20190907/97l9nb2swhh0l6phnvoz.png','15774124@qq.com','18866666666','一切都是浮云'),
 (12,'test','e10adc3949ba59abbe56e057f20f883e',0,'测试人员',0,9,'2019-09-05','admin','2019-11-07','admin',NULL,'18888888888@qq.com','18888888888','一枚小鲜肉');
 
-/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
-/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
-/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
-/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;

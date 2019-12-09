@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>参数列表</title>
+    <div th:replace="admin/include/resources :: head"></div>
+</head>
+<body>
+
+<!-- 加载动画 -->
+<div th:replace="admin/include/common :: loading"></div>
+
+<!-- 正文开始 -->
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-card-body table-tool-mini">
+            <div class="layui-form toolbar">
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label w-auto">参数名称：</label>
+                        <div class="layui-input-inline mr0">
+                            <input name="paramName" class="layui-input" type="text" placeholder="输入参数名称"/>
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label w-auto">参&nbsp;&nbsp;数&nbsp;&nbsp;键：</label>
+                        <div class="layui-input-inline mr0">
+                            <input name="paramKey" class="layui-input" type="text" placeholder="输入参数键"/>
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label w-auto">参&nbsp;&nbsp;数&nbsp;&nbsp;组：</label>
+                        <div class="layui-input-inline mr0">
+                            <input name="paramGroup" class="layui-input" type="text" placeholder="输入参数组"/>
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label w-auto">系统内置：</label>
+                        <div class="layui-input-inline mr0">
+                            <select name="status">
+                                <option value="">请选择</option>
+                                <option value="1">是</option>
+                                <option value="0">否</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="layui-inline" style="padding-right: 110px;">
+                        <button class="layui-btn icon-btn" lay-filter="formSubSearch" lay-submit>
+                            <i class="layui-icon">&#xe615;</i>搜索
+                        </button>
+                        <button shiro:hasPermission="i:sys:param:add" id="btnAdd"
+                                class="layui-btn icon-btn"><i class="layui-icon">&#xe654;</i>添加
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <table class="layui-table" id="tableList" lay-filter="tableList"></table>
+        </div>
+    </div>
+</div>
+<!-- 表格操作列 -->
+<script type="text/html" id="tableActionBar">
+    <a shiro:hasPermission="i:sys:param:update" class="layui-btn layui-btn-primary layui-btn-xs" lay-event="edit">修改</a>
+    <a shiro:hasPermission="i:sys:param:delete" class="layui-btn layui-btn-danger layui-btn-xs" {{d.type==1?'disabled':'lay-event="del"'}}>删除</a>
+</script>
+<!-- 表单弹窗 -->
+<script type="text/html" id="model">
+    <form id="modelForm" lay-filter="modelForm" class="layui-form model-form">
+        <input name="id" type="hidden"/>
+        <input name="type" type="hidden"/>
+        <div class="layui-form-item">
+            <label class="layui-form-label">参数组</label>
+            <div class="layui-input-block">
+                <input name="paramGroup" placeholder="请输入参数组" type="text" class="layui-input" lay-verType="tips" lay-verify="required" required/>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">参数名称</label>
+            <div class="layui-input-block">
+                <input name="paramName" placeholder="请输入参数名称" type="text" class="layui-input" lay-verType="tips" lay-verify="required" required />
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">参数键</label>
+            <div class="layui-input-block">
+                <input name="paramKey" placeholder="请输入参数键" type="text" class="layui-input" lay-verType="tips" lay-verify="required" required/>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">参数值</label>
+            <div class="layui-input-block">
+                <input name="paramValue" placeholder="请输入参数值" type="text" class="layui-input" lay-verType="tips" lay-verify="required" required/>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">备注</label>
+            <div class="layui-input-block">
+                <textarea name="remarks" placeholder="请输入内容" class="layui-textarea" maxlength="200"></textarea>
+            </div>
+        </div>
+        <div class="layui-form-item text-right">
+            <button class="layui-btn layui-btn-primary" type="button" ew-event="closePageDialog">取消</button>
+            <button class="layui-btn" lay-filter="modelSubmit" lay-submit>保存</button>
+        </div>
+    </form>
+</script>
+<!-- js部分 -->
+<div th:replace="admin/include/resources :: script"></div>
+<script>
+    layui.use(['layer', 'form', 'table', 'admin'], function () {
+        var $ = layui.jquery;
+        var layer = layui.layer;
+        var form = layui.form;
+        var table = layui.table;
+        var admin = layui.admin;
+
+        // 渲染表格
+        var insTb = table.render({
+            elem: '#tableList',
+            url: SERVER_CTX + '/sys/param/list?sort=id',
+            page: true,
+            toolbar: true,
+            cellMinWidth: 100,
+            defaultToolbar: ['filter'],
+            cols: [
+                [
+                    {type: 'numbers', title: '序号'},
+                    {field: 'paramGroup', title: '参数组'},
+                    {field: 'paramName', title: '参数名称'},
+                    {field: 'paramKey', title: '参数键'},
+                    {field: 'paramValue', title: '参数值'},
+                    {field: 'remarks', title: '备注'},
+                    {
+                        field: 'concurrent', align: 'center', templet: function (d) {
+                        var status = {
+                            '0':'否',
+                            '1':'是'
+                        };
+                        return status[d.type];
+                    }, title: '系统内置'
+                    },
+                    {align: 'center', toolbar: '#tableActionBar', title: '操作', minWidth: 200}
+                ]
+            ],
+            parseData: function (res) { //res 即为原始返回的数据
+                return {
+                    "code": res.code, //解析接口状态
+                    "msg": res.message, //解析提示文本
+                    "count": res.data ? res.data.totalElements : null, //解析数据长度
+                    "data": res.data ? res.data.content : null //解析数据列表
+                };
+            }
+        });
+
+        // 添加
+        $('#btnAdd').click(function () {
+            showEditModel();
+        });
+
+        // 搜索
+        form.on('submit(formSubSearch)', function (data) {
+            insTb.reload({where: data.field}, 'data');
+        });
+
+        // 工具条点击事件
+        table.on('tool(tableList)', function (obj) {
+            var data = obj.data;
+            var layEvent = obj.event;
+            if (layEvent === 'edit') { // 修改
+                showEditModel(data);
+            } else if (layEvent === 'del') { // 删除
+                doDel(obj);
+            }
+        });
+
+        // 显示表单弹窗
+        function showEditModel(data) {
+            admin.open({
+                type: 1,
+                title: (data ? '修改' : '添加'),
+                content: $('#model').html(),
+                success: function (layero, dIndex) {
+                    $(layero).children('.layui-layer-content').css('overflow', 'visible');
+                    var url = data ? '/sys/param/update' : '/sys/param/add';
+                    // 回显数据
+                    if (data) {
+                        console.log(data.type)
+                        if(data.type==1){
+                            $('#modelForm input[name="paramKey"]').attr('readonly', 'readonly');
+                            $('#modelForm input[name="paramGroup"]').attr('readonly', 'readonly');
+                        }
+                        form.val('modelForm', data);
+                    }
+                    // 表单提交事件
+                    form.on('submit(modelSubmit)', function (data) {
+                        layer.load(2);
+                        admin.req(SERVER_CTX + url, data.field, function (res) {
+                            layer.close(dIndex);
+                            layer.msg(res.message, {icon: 1});
+                            insTb.reload();
+                        }, 'post');
+
+                        return false;
+                    });
+                }
+            });
+        }
+
+        // 删除
+        function doDel(obj) {
+            layer.confirm('确定要删除吗？', {
+                shade: .1,
+                skin: 'layui-layer-admin'
+            }, function (i) {
+                layer.close(i);
+                layer.load(2);
+                admin.req(SERVER_CTX + '/sys/param/delete', {
+                    id: obj.data.id
+                }, function (res) {
+                    layer.msg(res.message, {icon: 1});
+                    obj.del();
+                }, 'post');
+            });
+        }
+
+    });
+</script>
+</body>
+</html>

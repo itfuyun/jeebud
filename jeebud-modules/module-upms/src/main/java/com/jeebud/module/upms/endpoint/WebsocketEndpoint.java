@@ -2,6 +2,7 @@ package com.jeebud.module.upms.endpoint;
 
 import com.jeebud.common.constant.MsgTypeEnum;
 import com.jeebud.common.constant.SysConsts;
+import com.jeebud.common.util.JsonUtils;
 import com.jeebud.common.util.SpringUtils;
 import com.jeebud.core.data.redis.RedisPublishService;
 import com.jeebud.core.shiro.ShiroUser;
@@ -9,6 +10,7 @@ import com.jeebud.core.websocket.WebSocketBeanManager;
 import com.jeebud.core.websocket.bean.SocketMsg;
 import com.jeebud.core.websocket.bean.WebSocketBean;
 import com.jeebud.core.websocket.conf.WebSocketConfig;
+import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -33,6 +35,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
 @ServerEndpoint(value = "/websocket", configurator = WebSocketConfig.class)
 @Slf4j
 @ToString
+@EqualsAndHashCode
 public class WebsocketEndpoint {
 
     /**

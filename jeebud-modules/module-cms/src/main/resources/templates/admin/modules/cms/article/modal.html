@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>内容页面</title>
+    <div th:replace="admin/include/resources :: head"></div>
+    <style>
+        .layui-form-item {
+            margin-bottom: 0;
+            margin-top: 20px;
+        }
+
+        .layui-form-item .layui-inline {
+            margin-bottom: 25px;
+            margin-right: 0;
+        }
+
+        .form-group-bottom {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: #fff;
+            padding: 10px 20px;
+            box-shadow: 0 -1px 2px 0 rgba(0, 0, 0, .05);
+        }
+        .header-btn {
+            float: right;
+            margin-top: 5px;
+        }
+
+    </style>
+</head>
+<body>
+
+<!-- 加载动画 -->
+<div th:replace="admin/include/common :: loading"></div>
+
+<!-- 正文开始 -->
+<form class="layui-form">
+    <div class="layui-fluid" style="padding-bottom: 75px;">
+
+        <div class="layui-row layui-col-space30">
+            <div class="layui-col-md9 layui-col-xs24">
+                <div class="layui-card">
+                    <div class="layui-card-body">
+                        <input name="id" type="hidden" th:value="${article.id}">
+                        <div class="layui-form-item">
+                            <select name="columnId" lay-verType="tips" lay-verify="required" th:field="${article.columnId}">
+                                <option value="">请选择栏目</option>
+                                <option th:value="${column.id}" th:each="column,columnStat : ${columnList}"
+                                        th:text="${column.name}"></option>
+                            </select>
+                        </div>
+                        <div class="layui-form-item">
+                            <input name="title" placeholder="请输入标题" type="text" class="layui-input" th:value="${article.title}"
+                                   lay-verType="tips" lay-verify="required" required/>
+                        </div>
+                        <div class="layui-form-item">
+                            <textarea id="ckEditor" class="layui-hide" th:utext="${article.content}"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-col-md3 layui-col-xs12">
+                <div class="layui-card">
+                    <div class="layui-card-header">封面
+                        <button type="button" lay-tips="清除封面图片" id="clearImage"
+                                class="layui-btn layui-btn-danger layui-btn-sm header-btn" ><i
+                                class="layui-icon layui-icon-delete"></i></button>
+                    </div>
+                    <div class="layui-card-body">
+                        <div class="layui-form-item">
+                            <input type="hidden" id="imageVal" name="image" th:value="${article.image}">
+                            <div th:class="(${article.image==null||article.image==''}) ? @{'layui-upload-drag'}:@{'layui-upload-drag layui-hide'}" id="uploadImg" style="display: block">
+                                <i class="layui-icon"></i>
+                                <p>点击上传，或将文件拖拽到此处</p>
+                            </div>
+                            <div style="position: relative;" id="preview" th:class="(${article.image==null||article.image==''}) ? @{'layui-hide'}:@{''}">
+                                <img id="previewImage" th:src="${article.image}" style="width: 100%;border-radius: 5px">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-col-md3 layui-col-xs12">
+                <div class="layui-card">
+                    <div class="layui-card-header">摘要</div>
+                    <div class="layui-card-body">
+                        <div class="layui-form-item">
+                            <textarea name="summary" placeholder="内容摘要" class="layui-textarea" th:text="${article.summary}"
+                                      maxlength="200"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+
+    <div class="form-group-bottom text-right">
+        <button type="button" id="backBtn" class="layui-btn layui-btn-primary">&emsp;返回&emsp;</button>
+        <button type="button" class="layui-btn" lay-filter="formSubmitAdv" lay-submit>&emsp;提交&emsp;</button>
+    </div>
+
+</form>
+
+<!-- js部分 -->
+<div th:replace="admin/include/resources :: script"></div>
+<script>
+    layui.use(['layer', 'form', 'util','admin', 'CKEDITOR', 'upload'], function () {
+        var $ = layui.jquery;
+        var layer = layui.layer;
+        var form = layui.form;
+        var admin = layui.admin;
+        var util = layui.util;
+        var upload = layui.upload;
+
+        var CKEDITOR = layui.CKEDITOR;
+
+        // 渲染富文本编辑器
+        CKEDITOR.replace('ckEditor', {height: 450});
+        var insEdt = CKEDITOR.instances.ckEditor;
+
+        $("#backBtn").click(function () {
+            location.href = SERVER_CTX + "/cms/article/pageList"
+        })
+        // 监听表单提交
+        form.on('submit(formSubmitAdv)', function (data) {
+            var formData = data.field;
+            var content = insEdt.getData();
+            formData.content = content;
+            var url = formData.id != '' ? '/cms/article/update' : '/cms/article/add';
+            layer.load(2);
+            admin.req(SERVER_CTX + url, formData, function (res) {
+                layer.msg(res.message, {icon: 1, time: 1500}, function () {
+                    location.href = SERVER_CTX + "/cms/article/pageList";
+                });
+            }, 'post');
+            return false;
+        });
+
+        //拖拽上传
+        upload.render({
+            elem: '#uploadImg',
+            url: SERVER_CTX + '/upload',
+            choose: function (obj) {
+                layer.load(2);
+            },
+            done: function (res, index, upload) {
+                layer.closeAll('loading');
+                if (res.code == 0) {
+                    var url = res.data;
+                    $("#uploadImg").addClass("layui-hide");
+                    $("#previewImage").attr("src", url);
+                    $("#preview").removeClass("layui-hide");
+                    $("#imageVal").val(url);
+                } else {
+                    layer.msg('上传失败', {icon: 2});
+                }
+            },
+            error: function () {
+                layer.closeAll('loading');
+                layer.msg('上传失败', {icon: 2});
+            },
+            accept: 'image'
+        });
+        $("#clearImage").click(function () {
+            $("#uploadImg").removeClass("layui-hide");
+            $("#preview").addClass("layui-hide");
+            $("#imageVal").val("");
+        })
+    });
+</script>
+</body>
+</html>

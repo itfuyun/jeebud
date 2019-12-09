@@ -34,6 +34,11 @@
             <artifactId>module-gen</artifactId>
             <version>1.0-RELEASE</version>
         </dependency>
+        <dependency>
+            <groupId>com.jeebud</groupId>
+            <artifactId>module-cms</artifactId>
+            <version>1.0-RELEASE</version>
+        </dependency>
     </dependencies>
     <build>
         <plugins>

@@ -8,7 +8,7 @@ import java.util.Date;
  *
  * @author Tanxh(itfuyun@gmail.com)
  */
-public class FileUtils {
+public class FileUtils extends org.apache.commons.io.FileUtils {
 
     /**
      * 生成带时间的文件路径
@@ -33,4 +33,5 @@ public class FileUtils {
         String suffix = originalFilename.substring(index + 1);
         return suffix;
     }
+
 }

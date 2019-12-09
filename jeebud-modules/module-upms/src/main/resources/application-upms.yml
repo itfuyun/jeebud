@@ -1,0 +1,40 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1:3306/jeebud-plus?useSSL=false
+    username: root
+    password: 123456
+    hikari:
+      max-lifetime: 30000
+      connection-test-query: SELECT 1
+      minimum-idle: 3
+      maximum-pool-size: 10
+  jpa:
+    show-sql: true
+  thymeleaf:
+    cache: false
+  redis:
+    database: 0
+    host: 127.0.0.1
+    port: 6379
+    password: 123456
+    timeout: 6000  # 连接超时时长（毫秒）
+    jedis:
+      pool:
+        max-active: 1000  # 连接池最大连接数（使用负值表示没有限制）
+        max-wait: -1      # 连接池最大阻塞等待时间（使用负值表示没有限制）
+        max-idle: 10      # 连接池中的最大空闲连接
+        min-idle: 5       # 连接池中的最小空闲连接
+  mail:
+    host: smtp.xxx.com
+    username: admin@xxx.com
+    password: 123456
+    nickname: JEEBUD
+    properties: {mail.smtp.ssl.trust: smtp.xxx.com,mail.smtp.socketFactory.class: javax.net.ssl.SSLSocketFactory,mail.smtp.socketFactory.port: 465,mail.smtp.auth: true,mail.smtp.starttls.enable: true,mail.smtp.starttls.required: true}
+jeebud:
+  sys:
+    version: 0.6.0
+    resCtx: /admin
+    serverCtx: /admin
+    ignoreAuthenticationUrl: ${jeebud.sys.serverCtx}/login,${jeebud.sys.serverCtx}/doLogin,${jeebud.sys.serverCtx}/captcha/**,${jeebud.sys.resCtx}/assets/**,/favicon.ico #shiro认证忽略的路径
+

@@ -18,6 +18,7 @@
         <module>module-quartz</module>
         <module>module-gen</module>
         <module>module-upload</module>
+        <module>module-cms</module>
     </modules>
 
     <dependencies>
