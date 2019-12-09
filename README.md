@@ -38,13 +38,14 @@ Ztree | 树插件  | [http://www.treejs.cn/v3/main.php#_zTreeInfo](http://www.tr
 ## 项目结构
 ``` lua
 jeebud
+├── doc -- 数据库脚本等
 ├── jeebud-common -- 项目公共模块，提供工具类、常量类
 ├── jeebud-core -- 底层一些封装，其他第三方集成
 ├── jeebud-modules -- 业务系统模块
 |    ├── module-gen -- 简易代码生成器
 |    ├── module-quartz -- 定时任务模块
 |    ├── module-upload -- 文件上传模块
-|    ├── module-wechat -- 微信公众号模块（开发中）
+|    ├── module-cms -- 内容管理示例模块
 |    └── module-upms -- 用户权限系统
 └── jeebud-platform -- 系统平台，提供项目配置、启动类、静态资源文件
 ```
@@ -54,6 +55,7 @@ jeebud
 - 用户管理
 - 角色管理
 - 权限管理
+- 参数管理
 - 日志管理
 - 定时任务
 - 代码生成
